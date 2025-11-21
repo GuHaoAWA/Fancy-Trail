@@ -1,0 +1,25 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "fancy_trail:blit",
+  "fragment": "fancy_trail:rgb_trail",
+  "attributes": [ "Position" ],
+  "samplers": [
+    { "name": "DiffuseSampler" },
+    { "name": "Mask" }
+  ],
+  "uniforms": [
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "OutSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+    { "name": "Time", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "Intensity", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "StarScale", "type": "float", "count": 1, "values": [ 3.0 ] },
+    { "name": "RainbowSpeed", "type": "float", "count": 1, "values": [ 0.08 ] },
+    { "name": "RainbowScale", "type": "float", "count": 1, "values": [ 1.2 ] },
+    { "name": "RainbowMix", "type": "float", "count": 1, "values": [ 0.8 ] },
+    { "name": "Opacity", "type": "float", "count": 1, "values": [ 0.7 ] }
+  ]
+}
