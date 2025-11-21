@@ -51,13 +51,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
     public void tick() {
         super.tick();
 
-        // 更新流动偏移量
-        this.flowOffset += this.flowSpeed * 0.02F;
-        if (this.flowOffset > 1.0F) {
-            this.flowOffset -= 1.0F;
-        }
 
-        updateMotionFactor();
     }
 
     private void updateMotionFactor() {
@@ -191,6 +185,8 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
 
                 from += interval;
                 to += interval;
+
+                updateMotionFactor();
             }
         }
     }
