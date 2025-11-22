@@ -33,7 +33,7 @@ import java.util.Optional;
 
 
 @OnlyIn(Dist.CLIENT)
-public class FlowingRGBTrailParticle extends AnimationTrailParticle {
+public class FlowingRGBTrailParticle extends FlowingAnimationTrailParticle {
 
 
     protected FlowingRGBTrailParticle(ClientLevel level, LivingEntityPatch<?> owner, Joint joint, AssetAccessor<? extends StaticAnimation> animation, TrailInfo trailInfo) {
@@ -46,10 +46,6 @@ public class FlowingRGBTrailParticle extends AnimationTrailParticle {
         FTRenderType.RGBTrailRenderType(trailInfo.texturePath()).callPipeline();
     }
 
-
-    public boolean shouldCull() {
-        return false;
-    }
 
     public @NotNull ParticleRenderType getRenderType() {
         return FTRenderType.RGBTrailRenderType(trailInfo.texturePath());

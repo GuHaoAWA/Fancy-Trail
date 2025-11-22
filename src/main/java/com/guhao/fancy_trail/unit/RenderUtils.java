@@ -4,6 +4,7 @@ import com.guhao.fancy_trail.FT;
 import com.guhao.fancy_trail.FTClientConfig;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -11,6 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -33,20 +36,10 @@ public class RenderUtils {
     public static ResourceLocation GetTexture(String path) {
         return ResourceLocation.fromNamespaceAndPath(FT.MODID, "textures/" + path + ".png");
     }
-    public static void delay_particle(Level level, int eid, int animid, int jointId, int idx,Long delayTime, SimpleParticleType simpleParticleType) {
-        Entity entity = level.getEntity(eid);
-        Minecraft.getInstance().submit(() -> CompletableFuture.delayedExecutor((delayTime), TimeUnit.MILLISECONDS)
-                .execute(() -> {
-                    if (entity.isAlive()) {
-                        level.addParticle(simpleParticleType,
-                                Double.longBitsToDouble(eid),
-                                0,
-                                Double.longBitsToDouble(animid),
-                                Double.longBitsToDouble(jointId),
-                                Double.longBitsToDouble(idx),
-                                0);
-                    }
-                }));
+    @OnlyIn(Dist.CLIENT)
+    public static void delay_particle(ClientLevel level, int eid, int animid, int jointId, int idx,
+                                      Long delayTime, SimpleParticleType simpleParticleType) {
+        ClientParticleDelayerUnit.scheduleParticle(level, eid, animid, jointId, idx, delayTime, simpleParticleType);
     }
     public static void spawnAdditionalParticles(Level level, List<Vec3> startPositions, List<Vec3> endPositions) {
         for (int i = 0; i < startPositions.size(); i++) {

@@ -33,7 +33,7 @@ import java.util.Optional;
 
 
 @OnlyIn(Dist.CLIENT)
-public class FlowingStarryTrailParticle extends AnimationTrailParticle {
+public class FlowingStarryTrailParticle extends FlowingAnimationTrailParticle {
 
     protected FlowingStarryTrailParticle(ClientLevel level, LivingEntityPatch<?> owner, Joint joint, AssetAccessor<? extends StaticAnimation> animation, TrailInfo trailInfo) {
         super(level, owner, joint, animation, trailInfo);
@@ -46,10 +46,6 @@ public class FlowingStarryTrailParticle extends AnimationTrailParticle {
         FTRenderType.subtleStarryTrailRenderType(trailInfo.texturePath(),null).callPipeline();
     }
 
-
-    public boolean shouldCull() {
-        return false;
-    }
 
     public @NotNull ParticleRenderType getRenderType() {
         return FTRenderType.subtleStarryTrailRenderType(trailInfo.texturePath(),null);

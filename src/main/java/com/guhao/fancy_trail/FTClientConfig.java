@@ -37,6 +37,7 @@ public class FTClientConfig {
         public final ForgeConfigSpec.DoubleValue flowingIntensity;
         public final ForgeConfigSpec.DoubleValue flowingSpeed;
 
+        public final ForgeConfigSpec.BooleanValue isOpenAir;
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Fancy Trail Client Configuration")
                     .push("starry_trail");
@@ -111,6 +112,13 @@ public class FTClientConfig {
                             "Default: 0.8")
                     .defineInRange("speed", 0.8, 0.0, Float.MAX_VALUE);
 
+            builder.pop();
+
+            builder.push("common_air_trail");
+
+            isOpenAir = builder
+                    .comment("enable common air trail")
+                    .define("isOpenAir", true);
             builder.pop();
         }
     }
@@ -211,6 +219,11 @@ public class FTClientConfig {
         }
         return false;
     }
+
+    public static boolean getAirIsOpen() {
+        return CLIENT.isOpenAir.get();
+    }
+
 
     // 设置配置值的方法（用于运行时修改）
     public static void setChromaticEffect(float value) {

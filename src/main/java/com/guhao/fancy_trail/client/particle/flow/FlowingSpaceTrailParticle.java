@@ -32,7 +32,7 @@ import java.util.Optional;
 
 
 @OnlyIn(Dist.CLIENT)
-public class FlowingSpaceTrailParticle extends AnimationTrailParticle {
+public class FlowingSpaceTrailParticle extends FlowingAnimationTrailParticle {
 
 
     protected FlowingSpaceTrailParticle(ClientLevel level, LivingEntityPatch<?> owner, Joint joint, AssetAccessor<? extends StaticAnimation> animation, TrailInfo trailInfo) {
@@ -46,9 +46,6 @@ public class FlowingSpaceTrailParticle extends AnimationTrailParticle {
     }
 
 
-    public boolean shouldCull() {
-        return false;
-    }
 
     public @NotNull ParticleRenderType getRenderType() {
         return FTRenderType.spaceTrailRenderType(trailInfo.texturePath());
