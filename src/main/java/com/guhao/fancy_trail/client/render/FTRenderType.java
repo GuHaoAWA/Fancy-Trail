@@ -91,7 +91,47 @@ public class FTRenderType {
             return bloomType;
         }
     }
+    // 刀光专用的残像效果
+    public static AfterImageRenderType bladeAfterImageRenderType(ResourceLocation texture) {
+        return new AfterImageRenderType(
+                OjangUtils.newRL(FT.MODID, "blade_after_image"),
+                texture,
+                0.6f,    // 强度 - 更高让残影更明显
+                4.0f,    // 衰减速度 - 更快让残影更锐利
+                0.8f,    // 运动模糊因子 - 增强刀光轨迹
+                0.15f,   // 色彩偏移 - 产生蓝紫效果
+                1.0f,    // 方向X
+                0.0f     // 方向Y
+        );
+    }
 
+    // 高速斩击刀光
+    public static AfterImageRenderType rapidSlashRenderType(ResourceLocation texture) {
+        return new AfterImageRenderType(
+                OjangUtils.newRL(FT.MODID, "rapid_slash"),
+                texture,
+                0.8f,    // 更高强度
+                5.0f,    // 更快衰减（残影更短）
+                0.9f,    // 强运动模糊
+                0.2f,    // 强色彩偏移
+                1.0f,
+                0.0f
+        );
+    }
+
+    // 重击刀光（拖尾更长）
+    public static AfterImageRenderType heavyBlowRenderType(ResourceLocation texture) {
+        return new AfterImageRenderType(
+                OjangUtils.newRL(FT.MODID, "heavy_blow"),
+                texture,
+                0.5f,    // 适中强度
+                2.5f,    // 较慢衰减（拖尾更长）
+                0.6f,    // 适中运动模糊
+                0.1f,    // 轻微色彩偏移
+                1.0f,
+                0.0f
+        );
+    }
     public static ParticleRenderType createEnderPortalRenderType() {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         AbstractTexture endPortalTexture = textureManager.getTexture(TheEndPortalRenderer.END_PORTAL_LOCATION);

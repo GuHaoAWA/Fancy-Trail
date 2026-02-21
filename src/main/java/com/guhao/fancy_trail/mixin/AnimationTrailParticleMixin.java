@@ -2,7 +2,6 @@ package com.guhao.fancy_trail.mixin;
 
 import com.guhao.fancy_trail.FTClientConfig;
 import com.guhao.fancy_trail.register.ClientModBusEvent;
-import com.guhao.fancy_trail.unit.RenderUtils;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.particles.SimpleParticleType;

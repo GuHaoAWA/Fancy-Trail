@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL12;
 import static net.minecraft.client.Minecraft.ON_OSX;
 
 public class BloomParticleRenderType extends PostParticleRenderType {
-    static final PostEffectPipelines.Pipeline ppl = new Pipeline(OjangUtils.newRL(FT.MODID, "bloom_particle"));
+    public static final PostEffectPipelines.Pipeline ppl = new Pipeline(OjangUtils.newRL(FT.MODID, "bloom_particle"));
 
     public BloomParticleRenderType(ResourceLocation renderTypeID, ResourceLocation tex) {
         super(renderTypeID, tex);

@@ -31,6 +31,8 @@ public class ClientModBusEvent {
     public static final RegistryObject<SimpleParticleType> FLOWING_RGB_TRAIL = PARTICLES.register("flowing_rgb_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> STARRY_TRAIL = PARTICLES.register("starry_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> FLOWING_STARRY_TRAIL = PARTICLES.register("flowing_starry_trail", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> AFTER_IMAGE_TRAIL = PARTICLES.register("after_image_trail", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> FLOWING_AFTER_IMAGE_TRAIL = PARTICLES.register("flowing_after_image_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> ENDER_TRAIL = PARTICLES.register("ender_trail", () -> new SimpleParticleType(true));
 
     public static final RegistryObject<SimpleParticleType> FIRE_TRAIL = PARTICLES.register("fire_trail", () -> new SimpleParticleType(true));
@@ -52,6 +54,8 @@ public class ClientModBusEvent {
         event.registerSpriteSet(FLOWING_RGB_TRAIL.get(), FlowingRGBTrailParticle.Provider::new);
         event.registerSpriteSet(STARRY_TRAIL.get(), StarryTrailParticle.Provider::new);
         event.registerSpriteSet(FLOWING_STARRY_TRAIL.get(), FlowingStarryTrailParticle.Provider::new);
+        event.registerSpriteSet(AFTER_IMAGE_TRAIL.get(), AfterImageTrailParticle.Provider::new);
+        event.registerSpriteSet(FLOWING_AFTER_IMAGE_TRAIL.get(), FlowingAfterImageTrailParticle.Provider::new);
         event.registerSpriteSet(ENDER_TRAIL.get(), EnderTrailParticle.Provider::new);
         event.registerSpriteSet(FIRE_TRAIL.get(), FireTrailParticle.Provider::new);
         event.registerSpriteSet(BURST_TRAIL.get(), BrustTrailParticle.Provider::new);
