@@ -25,6 +25,7 @@ import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -216,7 +217,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
             if (entity == null) {
                 return null;
             }
-
+            LivingEntityPatch<?> entitypatch = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
             LivingEntityPatch<?> owner = EpicFightCapabilities.getEntityPatch(entity, LivingEntityPatch.class);
 
             if (owner == null) {
@@ -245,7 +246,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
                     result = renderItemBase.trailInfo().overwrite(result);
                 }
             }
-
+            result = entitypatch.getEntityDecorations().getModifiedTrailInfo(result, result.hand() == null ? CapabilityItem.EMPTY : entitypatch.getAdvancedHoldingItemCapability(result.hand()));
             if (result.playable()) {
                 FlowingAnimationTrailParticle particle = new FlowingAnimationTrailParticle(level, owner, owner.getArmature().searchJointById(jointId), animation, result);
 

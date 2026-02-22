@@ -33,6 +33,7 @@ import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
+import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 import java.util.List;
 import java.util.Optional;
@@ -226,7 +227,7 @@ public class FireTrailParticle extends AnimationTrailParticle {
                     result = renderItemBase.trailInfo().overwrite(result);
                 }
             }
-
+            result = entitypatch.getEntityDecorations().getModifiedTrailInfo(result, result.hand() == null ? CapabilityItem.EMPTY : entitypatch.getAdvancedHoldingItemCapability(result.hand()));
             if (result.playable()) {
                 return new FireTrailParticle(level, entitypatch, entitypatch.getArmature().searchJointById(jointId), animation, result);
             } else {
