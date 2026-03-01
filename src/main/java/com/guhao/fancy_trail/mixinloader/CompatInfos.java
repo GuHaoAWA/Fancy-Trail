@@ -23,13 +23,16 @@ public class CompatInfos {
 
     static void register(){
         IRIS_SHADER = new CompatMod("oculus",
-                (m) -> new CompatMixinInfo(m, "MixinParticleEngineB") ,
-                (m) -> new CompatMixinInfo(m, "MixinParticleEngineA") {
+                (m) -> new CompatMixinInfo(m, "MixinParticleEngineB"){
+                },
+                (m) -> new CompatMixinInfo(m, "MixinParticleEngineA"){
                     @Override
                     public boolean shouldApplyMixin() {
                         return !mod.isLoaded();
                     }
-                });
+                }
+
+                );
     }
 
     public record MixinClassName(String className){
