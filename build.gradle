@@ -68,6 +68,13 @@ minecraft {
         }
     }
 }
+reobf {
+    jarJar {}
+}
+tasks.named('build').configure {
+    dependsOn tasks.named('jarJar')
+    dependsOn tasks.named('reobfJarJar')
+}
 tasks.named('jarJar').configure {
     manifest {
         attributes([
@@ -144,7 +151,7 @@ dependencies {
 
 }
 mixin {
-    add sourceSets.main, "fancy_trail.refmap.json"
+    add sourceSets.main, "fancy_trail.mixin-refmap.json"
     config 'fancy_trail.mixins.json'
 }
 

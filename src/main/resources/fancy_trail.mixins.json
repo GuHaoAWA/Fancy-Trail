@@ -17,5 +17,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "fancy_trail.refmap.json"
+  "refmap": "fancy_trail.mixin-refmap.json"
 }
