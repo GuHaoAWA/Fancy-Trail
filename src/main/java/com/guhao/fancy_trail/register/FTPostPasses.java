@@ -31,6 +31,7 @@ public class FTPostPasses {
     public static RGBTrail rgb_trail;
     public static StarrySwordTrail starry_sword_trail;
     public static AfterImage afterImage;
+    public static BackgroundBlend background_blend;
     public static void register(RegisterShadersEvent event) {
         try {
             System.out.println("Load Shader");
@@ -54,6 +55,7 @@ public class FTPostPasses {
             rgb_trail = new RGBTrail("fancy_trail:rgb_trail", rm);
             starry_sword_trail = new StarrySwordTrail("fancy_trail:starry_sword_trail", rm);
             afterImage = new AfterImage("fancy_trail:after_image", rm);
+            background_blend = new BackgroundBlend("fancy_trail:background_blend", rm);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

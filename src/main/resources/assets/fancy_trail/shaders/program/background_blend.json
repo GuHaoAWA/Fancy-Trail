@@ -1,0 +1,22 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "src_alpha",
+    "dstrgb": "one_minus_src_alpha"
+  },
+  "vertex": "fancy_trail:blit",
+  "fragment": "fancy_trail:background_blend",
+  "attributes": ["Position"],
+  "samplers": [
+    { "name": "DiffuseSampler" },
+    { "name": "Mask" }
+  ],
+  "uniforms": [
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "OutSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+    { "name": "Time", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "BlendStrength", "type": "float", "count": 1, "values": [ 0.85 ] },
+    { "name": "GlowIntensity", "type": "float", "count": 1, "values": [ 1.0 ] },
+    { "name": "AlphaBoost", "type": "float", "count": 1, "values": [ 1.2 ] }
+  ]
+}

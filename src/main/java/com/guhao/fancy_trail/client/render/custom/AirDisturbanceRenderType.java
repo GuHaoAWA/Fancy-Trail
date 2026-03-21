@@ -24,20 +24,11 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
     static final PostEffectPipelines.Pipeline ppl =
             new Pipeline(OjangUtils.newRL(FT.MODID, "air_disturbance"), 150);
 
-    private final float strength;
-    private final float speed;
-    private final float directionX;
-    private final float directionY;
-    private final float bladeLength;
 
-    public AirDisturbanceRenderType(ResourceLocation name,ResourceLocation location, float strength, float speed,
-                                    float directionX, float directionY, float bladeLength) {
+
+    public AirDisturbanceRenderType(ResourceLocation name,ResourceLocation location) {
         super(name, location);
-        this.strength = strength;
-        this.speed = speed;
-        this.directionX = directionX;
-        this.directionY = directionY;
-        this.bladeLength = bladeLength;
+
         priority = 1000;
     }
 
@@ -110,24 +101,43 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
             }
         }
 
+        private float lastStrength = 0.0f;
+
         void handleDisturbanceEffect(RenderTarget src) {
             RenderTarget tmp = TargetManager.getTarget(tmpTarget);
             RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
 
             updateAnimation();
 
-            float strength = 0.15f;
-            float speed = 3.0f;
-            float directionX = 1.0f;
-            float directionY = 0.0f;
-            float bladeLength = 0.5f;
+            // 动态参数计算
+            float baseStrength = 0.007f;
+            float speedFactor = 1.0f;
 
+            // 获取玩家速度影响（如果有）
+            if (Minecraft.getInstance().player != null) {
+                float speed = (float) Minecraft.getInstance().player.getDeltaMovement().length();
+                speedFactor = 0.6f + Math.min(0.8f, speed * 1.5f);
+            }
+
+            // 强度平滑过渡，避免突变
+            float targetStrength = baseStrength * getCurrentStrength() * speedFactor;
+            lastStrength = lastStrength * 0.7f + targetStrength * 0.3f;
+
+            // 方向根据玩家视角动态调整
+            float directionX = 1.0f;
+            float directionY = 0.3f;
+            if (Minecraft.getInstance().player != null) {
+                float yaw = Minecraft.getInstance().player.getYRot();
+                directionX = (float) Math.cos(Math.toRadians(yaw));
+                directionY = (float) Math.sin(Math.toRadians(yaw)) * 0.5f;
+            }
+
+            // 刀光长度根据动画进度微调
+            float bladeLength = 0.65f * (0.8f + progress * 0.4f);
 
             FTPostPasses.air_disturbance.process(
-                    main,    // 输入：主渲染目标
-                    src,     // 输入：粒子渲染目标
-                    tmp,     // 输出：临时目标
-                    strength * getCurrentStrength(),
+                    main, src, tmp,
+                    lastStrength,  // 使用平滑后的强度
                     currentTime,
                     progress,
                     directionX,

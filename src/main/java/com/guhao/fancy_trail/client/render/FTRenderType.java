@@ -31,20 +31,19 @@ import static com.guhao.fancy_trail.unit.RenderUtils.GetTexture;
 public class FTRenderType {
     public static final ResourceLocation NoneTexture = GetTexture("none");
     public static final HashMap<ResourceLocation, BloomParticleRenderType> BloomRenderTypes = Maps.newHashMap();
+    private static final HashMap<ResourceLocation, BackgroundBlendRenderType> BackgroundBlendCache = Maps.newHashMap();
+    private static int backgroundBlendIdx = 0;
+
     public static SpaceTrailRenderType spaceTrailRenderType(ResourceLocation location) {
         return new SpaceTrailRenderType(OjangUtils.newRL(FT.MODID, "space_broken_end"), location, 1, 4);
     }
 
     public static AirDisturbanceRenderType airDisturbanceRenderType(ResourceLocation texture) {
         return new AirDisturbanceRenderType(OjangUtils.newRL(FT.MODID, "air_trail"),
-                texture,
-                0.2f,  // 强度
-                0.1f,   // 速度
-                1.0f,   // 方向X
-                0.0f,   // 方向Y
-                0.5f    // 刀身长度
+                texture
         );
     }
+
     public static ChromaticAberrationRenderType strongChromaticAberrationRenderType(ResourceLocation location) {
         return ChromaticAberrationRenderType.createWithOffset(
                 OjangUtils.newRL(FT.MODID, "chromatic_aberration"),
@@ -52,14 +51,15 @@ public class FTRenderType {
                 1.01f, 1.002f, 1.008f  // 更强的色差效果
         );
     }
+
     private static int bloomIdx = 0;
+
     public static RGBTrailRenderType RGBTrailRenderType(ResourceLocation location) {
         return RGBTrailRenderType.createDefault(
                 OjangUtils.newRL(FT.MODID, "rgb_trail"),
                 location
         );
     }
-
 
     public static StarryTrailRenderType subtleStarryTrailRenderType(ResourceLocation location, ResourceLocation starTexture) {
         return StarryTrailRenderType.createSubtle(
@@ -68,7 +68,6 @@ public class FTRenderType {
                 starTexture
         );
     }
-
 
     // 自定义参数版本
     public static StarryTrailRenderType customStarryTrailRenderType(ResourceLocation location,
@@ -82,6 +81,7 @@ public class FTRenderType {
                 starTexture
         );
     }
+
     public static BloomTrailRenderType getBloomTrailRT(ResourceLocation texture) {
         if (BloomRenderTypes.containsKey(texture)) {
             return (BloomTrailRenderType) BloomRenderTypes.get(texture);
@@ -91,6 +91,7 @@ public class FTRenderType {
             return bloomType;
         }
     }
+
     // 刀光专用的残像效果
     public static AfterImageRenderType bladeAfterImageRenderType(ResourceLocation texture) {
         return new AfterImageRenderType(
@@ -132,6 +133,62 @@ public class FTRenderType {
                 0.0f
         );
     }
+    public static BackgroundBlendRenderType backgroundBlendRenderType(ResourceLocation texture) {
+        ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_default");
+        if (!BackgroundBlendCache.containsKey(key)) {
+            BackgroundBlendCache.put(key, BackgroundBlendRenderType.create(texture));
+        }
+        return BackgroundBlendCache.get(key);
+    }
+
+    /**
+     * 获取自定义背景混合渲染类型
+     */
+    public static BackgroundBlendRenderType backgroundBlendRenderType(ResourceLocation texture,
+                                                                      float blendStrength,
+                                                                      float glowIntensity,
+                                                                      float alphaBoost) {
+        ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_custom_" + backgroundBlendIdx++);
+        BackgroundBlendRenderType renderType = BackgroundBlendRenderType.createWithStrength(
+                texture, blendStrength, glowIntensity, alphaBoost);
+        BackgroundBlendCache.put(key, renderType);
+        return renderType;
+    }
+
+    /**
+     * 获取柔和背景混合渲染类型
+     */
+    public static BackgroundBlendRenderType softBackgroundBlendRenderType(ResourceLocation texture) {
+        ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_soft");
+        if (!BackgroundBlendCache.containsKey(key)) {
+            BackgroundBlendCache.put(key, BackgroundBlendRenderType.createWithStrength(texture, 0.6f, 0.8f, 1.0f));
+        }
+        return BackgroundBlendCache.get(key);
+    }
+
+    /**
+     * 获取强烈背景混合渲染类型
+     */
+    public static BackgroundBlendRenderType strongBackgroundBlendRenderType(ResourceLocation texture) {
+        ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_strong");
+        if (!BackgroundBlendCache.containsKey(key)) {
+            BackgroundBlendCache.put(key, BackgroundBlendRenderType.createWithStrength(texture, 1.0f, 1.5f, 1.5f));
+        }
+        return BackgroundBlendCache.get(key);
+    }
+
+    /**
+     * 获取发光增强背景混合渲染类型
+     */
+    public static BackgroundBlendRenderType glowingBackgroundBlendRenderType(ResourceLocation texture) {
+        ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_glow");
+        if (!BackgroundBlendCache.containsKey(key)) {
+            BackgroundBlendCache.put(key, BackgroundBlendRenderType.createWithStrength(texture, 0.8f, 1.8f, 1.2f));
+        }
+        return BackgroundBlendCache.get(key);
+    }
+
+
     public static ParticleRenderType createEnderPortalRenderType() {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         AbstractTexture endPortalTexture = textureManager.getTexture(TheEndPortalRenderer.END_PORTAL_LOCATION);

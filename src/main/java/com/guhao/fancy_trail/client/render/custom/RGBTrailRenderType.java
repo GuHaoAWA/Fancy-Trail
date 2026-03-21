@@ -23,23 +23,10 @@ public class RGBTrailRenderType extends PostParticleRenderType {
     static final PostEffectPipelines.Pipeline ppl =
             new Pipeline(OjangUtils.newRL(FT.MODID, "rgb_trail"), 1700);
 
-    private final float intensity;
-    private final float starScale;
-    private final float rainbowSpeed;
-    private final float rainbowScale;
-    private final float rainbowMix;
-    private final float opacity;
 
-    public RGBTrailRenderType(ResourceLocation name, ResourceLocation location,
-                              float intensity, float starScale,
-                              float rainbowSpeed, float rainbowScale, float rainbowMix, float opacity) {
+    public RGBTrailRenderType(ResourceLocation name, ResourceLocation location) {
         super(name, location);
-        this.intensity = intensity;
-        this.starScale = starScale;
-        this.rainbowSpeed = rainbowSpeed;
-        this.rainbowScale = rainbowScale;
-        this.rainbowMix = rainbowMix;
-        this.opacity = opacity;
+
         priority = 1700;
     }
 
@@ -134,15 +121,9 @@ public class RGBTrailRenderType extends PostParticleRenderType {
     // 便捷构造方法
     public static RGBTrailRenderType createDefault(ResourceLocation name, ResourceLocation location) {
         return new RGBTrailRenderType(
-                name, location,
-                1.0f, 3.0f, 0.08f, 1.2f, 0.8f, 0.7f
+                name, location
         );
     }
 
-    public static RGBTrailRenderType createStrong(ResourceLocation name, ResourceLocation location) {
-        return new RGBTrailRenderType(
-                name, location,
-                1.5f, 4.0f, 0.12f, 1.5f, 0.9f, 0.9f
-        );
-    }
+
 }
