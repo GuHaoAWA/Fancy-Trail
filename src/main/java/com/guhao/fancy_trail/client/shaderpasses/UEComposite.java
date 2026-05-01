@@ -1,12 +1,13 @@
 package com.guhao.fancy_trail.client.shaderpasses;
 
+import com.guhao.vix.client.shaderpasses.PostPassBase;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.IOException;
 
-import static com.guhao.fancy_trail.client.pipeline.PostEffectPipelines.shaderOrthoMatrix;
+import static com.guhao.vix.client.pipeline.PostEffectPipelines.shaderOrthoMatrix;
 
 
 public class UEComposite extends PostPassBase {

@@ -2,12 +2,12 @@ package com.guhao.fancy_trail.client.render.custom;
 
 
 import com.guhao.fancy_trail.FT;
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
-import com.guhao.fancy_trail.client.pipeline.PostParticleRenderType;
-import com.guhao.fancy_trail.client.targets.TargetManager;
 import com.guhao.fancy_trail.register.FTPostPasses;
-import com.guhao.fancy_trail.unit.OjangUtils;
-import com.guhao.fancy_trail.unit.RenderUtils;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
+import com.guhao.vix.client.pipeline.PostParticleRenderType;
+import com.guhao.vix.client.targets.TargetManager;
+import com.guhao.vix.util.OjangUtils;
+import com.guhao.vix.util.RenderUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import static com.guhao.fancy_trail.client.pipeline.PostEffectPipelines.getSource;
+import static com.guhao.vix.client.pipeline.PostEffectPipelines.*;
 import static net.minecraft.client.Minecraft.ON_OSX;
 
 public class SubSpaceRenderType extends PostParticleRenderType {

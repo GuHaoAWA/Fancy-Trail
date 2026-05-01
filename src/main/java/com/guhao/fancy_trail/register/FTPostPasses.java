@@ -2,6 +2,7 @@ package com.guhao.fancy_trail.register;
 
 
 import com.guhao.fancy_trail.client.shaderpasses.*;
+import com.guhao.vix.client.shaderpasses.PostPassBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;

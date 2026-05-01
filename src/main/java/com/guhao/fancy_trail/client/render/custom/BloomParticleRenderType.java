@@ -3,11 +3,11 @@ package com.guhao.fancy_trail.client.render.custom;
 
 
 import com.guhao.fancy_trail.FT;
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
-import com.guhao.fancy_trail.client.pipeline.PostParticleRenderType;
-import com.guhao.fancy_trail.client.targets.ScaledTarget;
 import com.guhao.fancy_trail.register.FTPostPasses;
-import com.guhao.fancy_trail.unit.OjangUtils;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
+import com.guhao.vix.client.pipeline.PostParticleRenderType;
+import com.guhao.vix.client.targets.ScaledTarget;
+import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;

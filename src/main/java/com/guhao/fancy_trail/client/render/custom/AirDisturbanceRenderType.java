@@ -2,11 +2,11 @@ package com.guhao.fancy_trail.client.render.custom;
 
 
 import com.guhao.fancy_trail.FT;
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
-import com.guhao.fancy_trail.client.pipeline.PostParticleRenderType;
-import com.guhao.fancy_trail.client.targets.TargetManager;
 import com.guhao.fancy_trail.register.FTPostPasses;
-import com.guhao.fancy_trail.unit.OjangUtils;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
+import com.guhao.vix.client.pipeline.PostParticleRenderType;
+import com.guhao.vix.client.targets.TargetManager;
+import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -16,22 +16,19 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 
-import static com.guhao.fancy_trail.client.pipeline.PostEffectPipelines.*;
+import static com.guhao.vix.client.pipeline.PostEffectPipelines.*;
 import static net.minecraft.client.Minecraft.ON_OSX;
+
 
 public class AirDisturbanceRenderType extends PostParticleRenderType {
 
     static final PostEffectPipelines.Pipeline ppl =
             new Pipeline(OjangUtils.newRL(FT.MODID, "air_disturbance"), 150);
 
-
-
-    public AirDisturbanceRenderType(ResourceLocation name,ResourceLocation location) {
+    public AirDisturbanceRenderType(ResourceLocation name, ResourceLocation location) {
         super(name, location);
-
         priority = 1000;
     }
-
 
     @Override
     protected ShaderInstance getShader() {
@@ -79,7 +76,6 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
                     bufferTarget.bindWrite(false);
                     started = true;
 
-                    // 开始动画
                     if (!animationStarted) {
                         currentTime = 0.0f;
                         progress = 0.0f;
@@ -109,21 +105,17 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
 
             updateAnimation();
 
-            // 动态参数计算
             float baseStrength = 0.007f;
             float speedFactor = 1.0f;
 
-            // 获取玩家速度影响（如果有）
             if (Minecraft.getInstance().player != null) {
                 float speed = (float) Minecraft.getInstance().player.getDeltaMovement().length();
                 speedFactor = 0.6f + Math.min(0.8f, speed * 1.5f);
             }
 
-            // 强度平滑过渡，避免突变
             float targetStrength = baseStrength * getCurrentStrength() * speedFactor;
             lastStrength = lastStrength * 0.7f + targetStrength * 0.3f;
 
-            // 方向根据玩家视角动态调整
             float directionX = 1.0f;
             float directionY = 0.3f;
             if (Minecraft.getInstance().player != null) {
@@ -132,12 +124,11 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
                 directionY = (float) Math.sin(Math.toRadians(yaw)) * 0.5f;
             }
 
-            // 刀光长度根据动画进度微调
             float bladeLength = 0.65f * (0.8f + progress * 0.4f);
 
             FTPostPasses.air_disturbance.process(
                     main, src, tmp,
-                    lastStrength,  // 使用平滑后的强度
+                    lastStrength,
                     currentTime,
                     progress,
                     directionX,
@@ -151,10 +142,9 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
 
         private void updateAnimation() {
             if (animationStarted) {
-                currentTime += 0.05f; // 每帧增加
+                currentTime += 0.05f;
                 progress = calculateProgress();
 
-                // 动画结束后重置
                 if (progress <= 0.0f) {
                     animationStarted = false;
                 }
@@ -162,28 +152,24 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
         }
 
         private float calculateProgress() {
-            float duration = 2.0f; // 总持续时间（秒）
+            float duration = 2.0f;
             float normalizedTime = currentTime / duration;
 
             if (normalizedTime < 0.3f) {
-                // 快速出现 (0-30%)
                 return normalizedTime / 0.3f;
             } else if (normalizedTime < 1.0f) {
-                // 缓慢消失 (30-100%)
                 return 1.0f - ((normalizedTime - 0.3f) / 0.7f);
             } else {
-                // 结束
                 return 0.0f;
             }
         }
 
         private float getCurrentStrength() {
-            float normalizedTime = currentTime / 2.0f; // 2秒总时长
+            float normalizedTime = currentTime / 2.0f;
 
             if (normalizedTime > 0.5f) {
-                // 后半段衰减
                 float fade = 1.0f - ((normalizedTime - 0.5f) / 0.5f);
-                return fade * fade; // 二次衰减
+                return fade * fade;
             }
             return 1.0f;
         }

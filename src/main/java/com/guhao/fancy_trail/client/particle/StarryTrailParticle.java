@@ -1,8 +1,7 @@
 package com.guhao.fancy_trail.client.particle;
 
-
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
 import com.guhao.fancy_trail.client.render.FTRenderType;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;

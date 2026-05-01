@@ -1,8 +1,8 @@
 package com.guhao.fancy_trail.client.particle;
 
 
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
 import com.guhao.fancy_trail.client.render.FTRenderType;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,7 +11,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;

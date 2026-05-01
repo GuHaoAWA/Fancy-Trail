@@ -2,7 +2,6 @@ package com.guhao.fancy_trail.client.particle;
 
 
 import com.google.common.collect.Lists;
-import com.guhao.fancy_trail.unit.RenderUtils;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -35,6 +34,8 @@ import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.guhao.fancy_trail.unit.FTunit.spawnAdditionalParticles;
 
 
 @OnlyIn(Dist.CLIENT)
@@ -143,7 +144,7 @@ public class BrustTrailParticle extends AnimationTrailParticle {
 
             visibleTrail = true;
         }
-        RenderUtils.spawnAdditionalParticles(level,finalStartPositions,finalEndPositions);
+        spawnAdditionalParticles(level,finalStartPositions,finalEndPositions);
         this.makeTrailEdges(finalStartPositions, finalEndPositions, visibleTrail ? this.trailEdges : this.invisibleTrailEdges);
 
 

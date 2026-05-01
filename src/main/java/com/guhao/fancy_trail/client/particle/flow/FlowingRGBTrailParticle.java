@@ -1,8 +1,8 @@
 package com.guhao.fancy_trail.client.particle.flow;
 
 
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
 import com.guhao.fancy_trail.client.render.FTRenderType;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -23,7 +23,6 @@ import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.client.animation.property.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
 import yesman.epicfight.client.ClientEngine;
-import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;

@@ -4,7 +4,7 @@ package com.guhao.fancy_trail.client.render;
 import com.google.common.collect.Maps;
 import com.guhao.fancy_trail.FT;
 import com.guhao.fancy_trail.client.render.custom.*;
-import com.guhao.fancy_trail.unit.OjangUtils;
+import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import static com.guhao.fancy_trail.unit.RenderUtils.GetTexture;
+import static com.guhao.vix.util.RenderUtils.GetTexture;
 
 
 @OnlyIn(Dist.CLIENT)

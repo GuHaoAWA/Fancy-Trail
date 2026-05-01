@@ -1,5 +1,6 @@
 package com.guhao.fancy_trail.client.shaderpasses;
 
+import com.guhao.vix.client.shaderpasses.PostPassBase;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.server.packs.resources.ResourceManager;
 

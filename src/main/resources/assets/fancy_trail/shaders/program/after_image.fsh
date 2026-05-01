@@ -39,22 +39,30 @@ void main() {
             offsetUV = clamp(offsetUV, 0.001, 0.999);
 
             vec4 sampleColor = texture(DiffuseSampler, offsetUV);
+            vec4 sampleMask = texture(Mask, offsetUV);
 
-            // 残影透明度衰减
-            float fade = exp(-offsetAmount * DecaySpeed);
+            // 残影透明度衰减，同时考虑遮罩
+            float fade = exp(-offsetAmount * DecaySpeed) * sampleMask.a;
 
-            accumulatedAfterImage += sampleColor * fade;
-            totalWeight += fade;
+            // 只在遮罩区域内累加
+            if(sampleMask.a > 0.001) {
+                accumulatedAfterImage += sampleColor * fade;
+                totalWeight += fade;
+            }
         }
 
-        // 归一化残影
-        vec4 afterImage = accumulatedAfterImage / totalWeight;
+        // 如果有有效的残影采样
+        if(totalWeight > 0.001) {
+            // 归一化残影
+            vec4 afterImage = accumulatedAfterImage / totalWeight;
 
-        // 混合当前帧和残影
-        fragColor = mix(currentColor, afterImage, Strength);
+            // 使用预乘alpha混合，避免白色残留
+            vec3 blended = mix(currentColor.rgb, afterImage.rgb, Strength * alpha);
 
-        // 保持原始透明度
-        fragColor.a = currentColor.a;
+            fragColor = vec4(blended, currentColor.a);
+        } else {
+            fragColor = currentColor;
+        }
 
     } else {
         // 没有刀光的区域保持原样

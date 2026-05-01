@@ -2,12 +2,13 @@ package com.guhao.fancy_trail.client.render.custom;
 
 
 import com.guhao.fancy_trail.FT;
-import com.guhao.fancy_trail.client.pipeline.PostEffectPipelines;
-import com.guhao.fancy_trail.client.pipeline.PostParticleRenderType;
-import com.guhao.fancy_trail.client.targets.TargetManager;
+
 import com.guhao.fancy_trail.register.FTPostPasses;
-import com.guhao.fancy_trail.unit.OjangUtils;
-import com.guhao.fancy_trail.unit.RenderUtils;
+import com.guhao.vix.client.pipeline.PostEffectPipelines;
+import com.guhao.vix.client.pipeline.PostParticleRenderType;
+import com.guhao.vix.client.targets.TargetManager;
+import com.guhao.vix.util.OjangUtils;
+import com.guhao.vix.util.RenderUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -15,7 +16,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
-import static com.guhao.fancy_trail.client.pipeline.PostEffectPipelines.*;
+import static com.guhao.vix.client.pipeline.PostEffectPipelines.*;
 import static net.minecraft.client.Minecraft.ON_OSX;
 
 public class SpaceBrokenRenderType extends PostParticleRenderType {

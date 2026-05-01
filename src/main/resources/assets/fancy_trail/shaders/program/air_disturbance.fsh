@@ -1,6 +1,8 @@
 #version 150
 
+// ========================================
 // 完全保留原有uniform变量，无任何新增/修改/删除
+// ========================================
 uniform sampler2D DiffuseSampler;
 uniform sampler2D Mask;
 uniform float DistortionStrength;
@@ -75,6 +77,17 @@ float turbulence(vec2 p) {
 // 3A级扭曲系统（物理化+分层控制，精简冗余逻辑）
 // ========================================
 
+// 安全边界钳位函数
+vec2 safeClamp(vec2 coord, float margin) {
+    return clamp(coord, margin, 1.0 - margin);
+}
+
+// 安全纹理采样（带边界保护）
+vec4 safeTexture(sampler2D tex, vec2 coord, float margin) {
+    vec2 clampedCoord = safeClamp(coord, margin);
+    return texture(tex, clampedCoord);
+}
+
 // 运动轨迹贴合的扭曲计算
 vec2 getMotionDistortion(vec2 uv, float strength, float alpha) {
     vec2 dir = normalize(Direction);
@@ -107,32 +120,52 @@ vec2 getRadialDistortion(vec2 centerVec, float strength, float alpha) {
 }
 
 // ========================================
-// 主着色器逻辑（仅保留扭曲效果，无任何颜色改动）
+// 安全保护的主着色器逻辑
 // ========================================
 void main() {
-    vec4 mask = texture(Mask, texCoord);
-    float alpha = mask.a;
+    // 边界安全参数
+    const float SAFE_MARGIN = 0.001;
+    const float EDGE_START = 0.85;
+    const float EDGE_END = 0.95;
+    const float MIN_ALPHA = 0.001;
+    const float MAX_STRENGTH = 0.5;  // 最大扭曲强度限制
 
-    if (alpha > 0.001) {
+    // 获取蒙版和原始纹理（带安全检查）
+    vec4 mask = safeTexture(Mask, texCoord, SAFE_MARGIN);
+    float alpha = clamp(mask.a, 0.0, 1.0);
+
+    // 只对有效区域进行处理
+    if (alpha > MIN_ALPHA) {
+        // 计算中心向量和距离（带边界保护）
         vec2 centerVec = texCoord - vec2(0.5);
         float centerDist = length(centerVec);
+
+        // 边缘衰减（平滑过渡）
         float edgeFalloff = 1.0 - smoothstep(0.0, 0.3, centerDist);
-        float strength = DistortionStrength * alpha * 0.15 * edgeFalloff;
 
+        // 限制扭曲强度，防止失真过度
+        float strength = min(DistortionStrength * alpha * 0.15 * edgeFalloff, MAX_STRENGTH);
+
+        // 保存原始UV坐标
         vec2 uv = texCoord;
-        vec2 noiseCoordBase = uv * 4.0 + Time * 2.0;
-        float fbmNoise = fbm(noiseCoordBase, 4, 2.0, 0.5);
 
+        // 噪声坐标基础（带时间动画）
+        vec2 noiseCoordBase = uv * 4.0 + Time * 2.0;
+        float fbmNoise = clamp(fbm(noiseCoordBase, 4, 2.0, 0.5), -1.0, 1.0);
+
+        // 热浪扭曲层（带强度限制）
         float heatWave1 = sin(uv.x * 50.0 + uv.y * 30.0 + Time * 8.0 + fbmNoise) * strength;
         float heatWave2 = cos(uv.x * 40.0 - uv.y * 25.0 + Time * 6.0 + turbulence(uv * 8.0 + Time * 3.0) * 0.5) * strength * 0.7;
         float heatWave3 = perlinNoise(uv * 15.0 + Time * 4.0) * strength * 0.8;
 
+        // 各层扭曲计算（带安全范围）
         vec2 baseDistortion = vec2(heatWave1 + heatWave3, heatWave2);
         vec2 motionDistortion = getMotionDistortion(uv, strength, alpha);
         vec2 vortexDistortion = getVortexDistortion(uv, centerVec, strength, alpha);
         vec2 radialDistortion = getRadialDistortion(centerVec, strength, alpha);
         vec2 advancedNoiseDistort = vec2(fbm(uv * 12.0 + Time * 2.5, 3, 2.0, 0.5)) * strength * 0.4;
 
+        // 合并所有扭曲（带权重）
         vec2 totalDistortion =
         baseDistortion * 0.8 +
         motionDistortion * 1.0 +
@@ -140,13 +173,33 @@ void main() {
         radialDistortion * 0.7 +
         advancedNoiseDistort * 0.5;
 
-        vec2 distortedCoord = uv + totalDistortion;
-        vec4 originalScene = texture(DiffuseSampler, uv);
-        vec4 distortedScene = texture(DiffuseSampler, distortedCoord);
+        // 限制总扭曲量，防止极端偏移
+        float maxDistortion = 0.1;
+        totalDistortion = clamp(totalDistortion, -maxDistortion, maxDistortion);
 
-        // 纯扭曲输出：不改变任何颜色属性
-        fragColor = vec4(distortedScene.rgb, originalScene.a);
+        // 应用扭曲并确保在安全边界内
+        vec2 distortedCoord = uv + totalDistortion;
+        vec2 safeDistortedCoord = safeClamp(distortedCoord, SAFE_MARGIN);
+
+        // 安全采样（带边缘保护）
+        vec4 originalScene = safeTexture(DiffuseSampler, uv, SAFE_MARGIN);
+        vec4 distortedScene = safeTexture(DiffuseSampler, safeDistortedCoord, SAFE_MARGIN);
+
+        // 边缘淡出效果（防止边缘扭曲产生的采样异常）
+        float edgeFade = 1.0 - smoothstep(EDGE_START, EDGE_END, length(safeDistortedCoord - 0.5));
+        float finalAlpha = originalScene.a * edgeFade;
+
+        // 输出最终颜色（完全保持原始颜色值，仅改变位置）
+        vec3 finalColor = distortedScene.rgb * edgeFade;
+        fragColor = vec4(finalColor, finalAlpha);
+
     } else {
-        fragColor = texture(DiffuseSampler, texCoord);
+        // 无扭曲区域，直接输出原始纹理（带边界保护）
+        fragColor = safeTexture(DiffuseSampler, texCoord, SAFE_MARGIN);
+    }
+
+    // 最终输出验证（防止NaN或Infinity）
+    if (any(isnan(fragColor)) || any(isinf(fragColor))) {
+        fragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
 }
