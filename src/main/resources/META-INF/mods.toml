@@ -20,7 +20,7 @@ license="${mod_license}"
 # The modid of the mod
 modId="fancy_trail" #mandatory
 # The version number of the mod
-version="1.2.0" #mandatory
+version="1.2.3" #mandatory
 # A display name for the mod
 displayName="Fancy Trail" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://docs.minecraftforge.net/en/latest/misc/updatechecker/
@@ -65,6 +65,13 @@ description='''${mod_description}'''
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+[[dependencies.fancy_trail]]
+modId="vix"
+mandatory=true
+# This version range declares a minimum of the current minecraft version up to but not including the next major version
+versionRange="[1.0.2,)"
+ordering="NONE"
+side="BOTH"
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't

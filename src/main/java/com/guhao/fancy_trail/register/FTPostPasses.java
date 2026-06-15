@@ -28,6 +28,7 @@ public class FTPostPasses {
     public static MaskComposite mask_composite;
 
     public static AirDisturbance air_disturbance;
+    public static StaticAirDisturbance static_air_disturbance;
     public static ChromaticAberration chromatic_aberration;
     public static RGBTrail rgb_trail;
     public static StarrySwordTrail starry_sword_trail;
@@ -52,6 +53,7 @@ public class FTPostPasses {
             blur = new Blur(rm);
 
             air_disturbance = new AirDisturbance("fancy_trail:air_disturbance", rm);
+            static_air_disturbance = new StaticAirDisturbance("fancy_trail:static_air_disturbance", rm);
             chromatic_aberration = new ChromaticAberration("fancy_trail:chromatic_aberration", rm);
             rgb_trail = new RGBTrail("fancy_trail:rgb_trail", rm);
             starry_sword_trail = new StarrySwordTrail("fancy_trail:starry_sword_trail", rm);

@@ -24,11 +24,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import static com.guhao.vix.util.RenderUtils.GetTexture;
+
 
 
 @OnlyIn(Dist.CLIENT)
 public class FTRenderType {
+    public static ResourceLocation GetTexture(String path) {
+        return ResourceLocation.fromNamespaceAndPath(FT.MODID, "textures/" + path + ".png");
+    }
     public static final ResourceLocation NoneTexture = GetTexture("none");
     public static final HashMap<ResourceLocation, BloomParticleRenderType> BloomRenderTypes = Maps.newHashMap();
     private static final HashMap<ResourceLocation, BackgroundBlendRenderType> BackgroundBlendCache = Maps.newHashMap();
@@ -40,6 +43,12 @@ public class FTRenderType {
 
     public static AirDisturbanceRenderType airDisturbanceRenderType(ResourceLocation texture) {
         return new AirDisturbanceRenderType(OjangUtils.newRL(FT.MODID, "air_trail"),
+                texture
+        );
+    }
+
+    public static StaticAirDisturbanceRenderType staticAirDisturbanceRenderType(ResourceLocation texture) {
+        return new StaticAirDisturbanceRenderType(OjangUtils.newRL(FT.MODID, "static_air_trail"),
                 texture
         );
     }

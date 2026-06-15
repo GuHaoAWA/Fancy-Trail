@@ -24,6 +24,8 @@ public class ClientModBusEvent {
     public static final RegistryObject<SimpleParticleType> SPACE_TRAIL = PARTICLES.register("space_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> FLOWING_SPACE_TRAIL = PARTICLES.register("flowing_space_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> AIR_TRAIL = PARTICLES.register("air_trail", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> STATIC_AIR_TRAIL = PARTICLES.register("static_air_trail", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> FLOWING_STATIC_AIR_TRAIL = PARTICLES.register("flowing_static_air_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> FLOWING_AIR_TRAIL = PARTICLES.register("flowing_air_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> CHROMATIC_TRAIL = PARTICLES.register("chromatic_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> FLOWING_CHROMATIC_TRAIL = PARTICLES.register("flowing_chromatic_trail", () -> new SimpleParticleType(true));
@@ -48,7 +50,9 @@ public class ClientModBusEvent {
         event.registerSpriteSet(SPACE_TRAIL.get(), SpaceTrailParticle.Provider::new);
         event.registerSpriteSet(FLOWING_SPACE_TRAIL.get(), FlowingSpaceTrailParticle.Provider::new);
         event.registerSpriteSet(AIR_TRAIL.get(), AirTrailParticle.Provider::new);
+        event.registerSpriteSet(STATIC_AIR_TRAIL.get(), StaticAirTrailParticle.Provider::new);
         event.registerSpriteSet(FLOWING_AIR_TRAIL.get(), FlowingAirTrailParticle.Provider::new);
+        event.registerSpriteSet(FLOWING_STATIC_AIR_TRAIL.get(), FlowingStaticAirTrailParticle.Provider::new);
         event.registerSpriteSet(CHROMATIC_TRAIL.get(), ChromaticTrailParticle.Provider::new);
         event.registerSpriteSet(FLOWING_CHROMATIC_TRAIL.get(), FlowingChromaticTrailParticle.Provider::new);
         event.registerSpriteSet(RGB_TRAIL.get(), RGBTrailParticle.Provider::new);

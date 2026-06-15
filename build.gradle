@@ -137,13 +137,7 @@ dependencies {
     implementation fg.deobf("curse.maven:embeddium-908741:5556138")
     implementation fg.deobf("curse.maven:oculus-581495:5299671")
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:7173243")
-
-    implementation fg.deobf("libs:VIX-1.0.0-all:1.0.0")
-
-    jarJar fg.deobf("libs:VIX-1.0.0-all:1.0.0") {
-        transitive = false
-        jarJar.ranged(it, "[1.0.0,)")
-    }
+    implementation fg.deobf("curse.maven:guhaos-vix-1531111:8240708")
 
 //    implementation fg.deobf("curse.maven:tickrate-changer-890786:4653011")
     implementation 'me.fallenbreath:conditional-mixin-forge:0.6.4'
