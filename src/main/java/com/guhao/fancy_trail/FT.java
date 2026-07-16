@@ -1,6 +1,7 @@
 package com.guhao.fancy_trail;
 
 
+import com.guhao.fancy_trail.client.render.afterimage.WeaponAfterimageManager;
 import com.guhao.fancy_trail.register.ClientModBusEvent;
 import com.guhao.fancy_trail.register.FTPostPasses;
 import com.guhao.fancy_trail.unit.ClientParticleDelayerUnit;
@@ -42,6 +43,7 @@ public class FT {
     @SubscribeEvent
     public static void onClientLevelUnload(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientParticleDelayerUnit.clearAll();
+        WeaponAfterimageManager.getInstance().onWorldUnload();
     }
 }
 

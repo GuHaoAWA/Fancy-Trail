@@ -1,6 +1,7 @@
 package com.guhao.fancy_trail.mixin;
 
 import com.guhao.fancy_trail.FTClientConfig;
+import com.guhao.fancy_trail.client.render.afterimage.WeaponAfterimageManager;
 import com.guhao.fancy_trail.register.ClientModBusEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -10,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import yesman.epicfight.client.particle.AnimationTrailParticle;
+import yesman.epicfight.world.capabilities.entitypatch.EntityPatch;
+import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 @Mixin(value = AnimationTrailParticle.Provider.class, remap = false)
 public class AnimationTrailParticleMixin {
@@ -18,14 +21,15 @@ public class AnimationTrailParticleMixin {
     public void createParticle(SimpleParticleType typeIn, ClientLevel level, double x, double y, double z,
                                double xSpeed, double ySpeed, double zSpeed,
                                CallbackInfoReturnable<Particle> cir) {
-        if (!FTClientConfig.getAirIsOpen()) return;
+        if (cir.getReturnValue() == null) return;
 
+        int eid = (int) Double.doubleToRawLongBits(x);
+        int animid = (int) Double.doubleToRawLongBits(z);
+        int jointId = (int) Double.doubleToRawLongBits(xSpeed);
+        int idx = (int) Double.doubleToRawLongBits(ySpeed);
 
-        if (cir.getReturnValue() != null) {
-            int eid = (int) Double.doubleToRawLongBits(x);
-            int animid = (int) Double.doubleToRawLongBits(z);
-            int jointId = (int) Double.doubleToRawLongBits(xSpeed);
-            int idx = (int) Double.doubleToRawLongBits(ySpeed);
+        // 空气拖尾
+        if (FTClientConfig.getAirIsOpen()) {
             level.addParticle(ClientModBusEvent.FLOWING_AIR_TRAIL.get(),
                     Double.longBitsToDouble(eid),
                     0,
@@ -33,7 +37,17 @@ public class AnimationTrailParticleMixin {
                     Double.longBitsToDouble(jointId),
                     Double.longBitsToDouble(idx),
                     0);
-//            RenderUtils.delay_particle(level, eid, animid, jointId, idx, 100L, ClientModBusEvent.FLOWING_AIR_TRAIL.get());
+        }
+
+        // 武器残像触发器检测：独立的开关，不受空气拖尾影响
+        Particle particle = cir.getReturnValue();
+        if (particle instanceof AnimationTrailParticle
+                && typeIn == ClientModBusEvent.WEAPON_AFTERIMAGE.get()) {
+            AbstractTrailParticleAccessor accessor = (AbstractTrailParticleAccessor) particle;
+            EntityPatch<?> owner = accessor.getOwner();
+            if (owner instanceof LivingEntityPatch<?> lep) {
+                WeaponAfterimageManager.getInstance().onWeaponTrailDetected(lep);
+            }
         }
     }
 }

@@ -12,11 +12,11 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = '1.20.1-1.2.0'
+version = '1.20.1'
 group = 'com.guhao.fancy_trail'
 
 base {
-    archivesName =  'Fancy-Trail'+ "1.20.1-1.0"+ "" + System.currentTimeSeconds()
+    archivesName =  'Fancy-Trail-'+ "1.2.4"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -137,7 +137,7 @@ dependencies {
     implementation fg.deobf("curse.maven:embeddium-908741:5556138")
     implementation fg.deobf("curse.maven:oculus-581495:5299671")
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:7173243")
-    implementation fg.deobf("curse.maven:guhaos-vix-1531111:8240708")
+    implementation fg.deobf("curse.maven:guhaos-vix-1531111:8401057")
 
 //    implementation fg.deobf("curse.maven:tickrate-changer-890786:4653011")
     implementation 'me.fallenbreath:conditional-mixin-forge:0.6.4'

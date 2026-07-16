@@ -7,6 +7,10 @@
   ],
   "client": [
     "AnimationTrailParticleMixin",
+    "AbstractTrailParticleAccessor",
+    "AnimationTrailParticleFieldAccessor",
+    "WeaponAfterimageCaptureMixin",
+    "LivingEntityPatchModelMatrixMixin"
   ],
   "injectors": {
     "defaultRequire": 1

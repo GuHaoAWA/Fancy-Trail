@@ -38,6 +38,14 @@ public class FTClientConfig {
         public final ForgeConfigSpec.DoubleValue flowingSpeed;
 
         public final ForgeConfigSpec.BooleanValue isOpenAir;
+
+        // 武器残像配置
+        public final ForgeConfigSpec.BooleanValue weaponAfterimageEnabled;
+        public final ForgeConfigSpec.IntValue weaponAfterimageGhostCount;
+        public final ForgeConfigSpec.DoubleValue weaponAfterimageMaxAlpha;
+        public final ForgeConfigSpec.DoubleValue weaponAfterimageFadeExponent;
+        public final ForgeConfigSpec.IntValue weaponAfterimageMaxAgeTicks;
+
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             builder.comment("Fancy Trail Client Configuration")
                     .push("starry_trail");
@@ -119,6 +127,41 @@ public class FTClientConfig {
             isOpenAir = builder
                     .comment("enable common air trail")
                     .define("isOpenAir", true);
+            builder.pop();
+
+            builder.push("weapon_afterimage");
+
+            weaponAfterimageEnabled = builder
+                    .comment("Enable weapon 3D model ghost afterimages during attacks",
+                            "Default: true")
+                    .define("enabled", true);
+
+            weaponAfterimageGhostCount = builder
+                    .comment("Number of ghost copies trailing behind the weapon",
+                            "Higher values = longer trail but more GPU work",
+                            "Range: 1 - 16",
+                            "Default: 5")
+                    .defineInRange("ghostCount", 5, 1, 16);
+
+            weaponAfterimageMaxAlpha = builder
+                    .comment("Maximum opacity of the ghost copies (oldest ghosts are most transparent)",
+                            "Range: 0.0 - 1.0",
+                            "Default: 0.4")
+                    .defineInRange("maxAlpha", 0.4, 0.0, 1.0);
+
+            weaponAfterimageFadeExponent = builder
+                    .comment("Controls how quickly ghosts fade out",
+                            "1.0 = linear fade, 2.0 = quadratic (faster fade), 0.5 = square root (slower fade)",
+                            "Range: 0.5 - 5.0",
+                            "Default: 2.0")
+                    .defineInRange("fadeExponent", 2.0, 0.5, 5.0);
+
+            weaponAfterimageMaxAgeTicks = builder
+                    .comment("Maximum age of a ghost snapshot in ticks (20 ticks = 1 second)",
+                            "Range: 2 - 40",
+                            "Default: 10")
+                    .defineInRange("maxAgeTicks", 10, 2, 40);
+
             builder.pop();
         }
     }
@@ -224,6 +267,26 @@ public class FTClientConfig {
         return CLIENT.isOpenAir.get();
     }
 
+    // 武器残像配置 getter
+    public static boolean getWeaponAfterimageEnabled() {
+        return CLIENT.weaponAfterimageEnabled.get();
+    }
+
+    public static int getWeaponAfterimageGhostCount() {
+        return CLIENT.weaponAfterimageGhostCount.get();
+    }
+
+    public static float getWeaponAfterimageMaxAlpha() {
+        return CLIENT.weaponAfterimageMaxAlpha.get().floatValue();
+    }
+
+    public static float getWeaponAfterimageFadeExponent() {
+        return CLIENT.weaponAfterimageFadeExponent.get().floatValue();
+    }
+
+    public static int getWeaponAfterimageMaxAgeTicks() {
+        return CLIENT.weaponAfterimageMaxAgeTicks.get();
+    }
 
     // 设置配置值的方法（用于运行时修改）
     public static void setChromaticEffect(float value) {

@@ -4,6 +4,7 @@ package com.guhao.fancy_trail.register;
 import com.guhao.fancy_trail.FT;
 import com.guhao.fancy_trail.client.particle.*;
 import com.guhao.fancy_trail.client.particle.flow.*;
+import com.guhao.fancy_trail.client.render.afterimage.WeaponAfterImageTriggerParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -41,6 +42,9 @@ public class ClientModBusEvent {
     public static final RegistryObject<SimpleParticleType> FIRE_TRAIL = PARTICLES.register("fire_trail", () -> new SimpleParticleType(true));
     public static final RegistryObject<SimpleParticleType> BURST_TRAIL = PARTICLES.register("burst_trail", () -> new SimpleParticleType(true));
 
+    /** 武器3D模型残影触发器粒子。不渲染任何视觉效果，仅作为残影系统的开关触发器 */
+    public static final RegistryObject<SimpleParticleType> WEAPON_AFTERIMAGE = PARTICLES.register("weapon_afterimage", () -> new SimpleParticleType(true));
+
     public static final RegistryObject<SimpleParticleType> FLOWING_ANIMATION_TRAIL = PARTICLES.register("flowing_trail", () -> new SimpleParticleType(true));
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -65,6 +69,7 @@ public class ClientModBusEvent {
         event.registerSpriteSet(AAA_TRAIL.get(), AAATrailParticle.Provider::new);
         event.registerSpriteSet(FIRE_TRAIL.get(), FireTrailParticle.Provider::new);
         event.registerSpriteSet(BURST_TRAIL.get(), BrustTrailParticle.Provider::new);
+        event.registerSpriteSet(WEAPON_AFTERIMAGE.get(), WeaponAfterImageTriggerParticle.Provider::new);
         event.registerSpriteSet(FLOWING_ANIMATION_TRAIL.get(), FlowingAnimationTrailParticle.Provider::new);
 
     }
