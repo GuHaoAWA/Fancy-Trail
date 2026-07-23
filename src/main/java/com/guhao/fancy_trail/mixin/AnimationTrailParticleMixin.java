@@ -30,7 +30,7 @@ public class AnimationTrailParticleMixin {
 
         // 空气拖尾
         if (FTClientConfig.getAirIsOpen()) {
-            level.addParticle(ClientModBusEvent.FLOWING_AIR_TRAIL.get(),
+            level.addParticle(ClientModBusEvent.STATIC_AIR_TRAIL.get(),
                     Double.longBitsToDouble(eid),
                     0,
                     Double.longBitsToDouble(animid),
@@ -39,15 +39,5 @@ public class AnimationTrailParticleMixin {
                     0);
         }
 
-        // 武器残像触发器检测：独立的开关，不受空气拖尾影响
-        Particle particle = cir.getReturnValue();
-        if (particle instanceof AnimationTrailParticle
-                && typeIn == ClientModBusEvent.WEAPON_AFTERIMAGE.get()) {
-            AbstractTrailParticleAccessor accessor = (AbstractTrailParticleAccessor) particle;
-            EntityPatch<?> owner = accessor.getOwner();
-            if (owner instanceof LivingEntityPatch<?> lep) {
-                WeaponAfterimageManager.getInstance().onWeaponTrailDetected(lep);
-            }
-        }
     }
 }
