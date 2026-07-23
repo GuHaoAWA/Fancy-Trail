@@ -2,8 +2,6 @@ package com.inspiration_mushroom.fancy_trail.register;
 
 
 import com.inspiration_mushroom.fancy_trail.FT;
-import com.guhao.fancy_trail.client.particle.*;
-import com.guhao.fancy_trail.client.particle.flow.*;
 import com.inspiration_mushroom.fancy_trail.client.particle.*;
 import com.inspiration_mushroom.fancy_trail.client.particle.flow.*;
 import com.inspiration_mushroom.fancy_trail.client.render.afterimage.WeaponAfterImageTriggerParticle;

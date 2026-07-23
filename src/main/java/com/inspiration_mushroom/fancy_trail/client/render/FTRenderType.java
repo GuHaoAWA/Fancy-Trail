@@ -3,7 +3,6 @@ package com.inspiration_mushroom.fancy_trail.client.render;
 
 import com.google.common.collect.Maps;
 import com.inspiration_mushroom.fancy_trail.FT;
-import com.guhao.fancy_trail.client.render.custom.*;
 import com.guhao.vix.util.OjangUtils;
 import com.inspiration_mushroom.fancy_trail.client.render.custom.*;
 import com.mojang.blaze3d.platform.GlStateManager;

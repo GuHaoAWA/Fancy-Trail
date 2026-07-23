@@ -1,7 +1,6 @@
 package com.inspiration_mushroom.fancy_trail.register;
 
 
-import com.guhao.fancy_trail.client.shaderpasses.*;
 import com.guhao.vix.client.shaderpasses.PostPassBase;
 import com.inspiration_mushroom.fancy_trail.client.shaderpasses.*;
 import net.minecraft.client.Minecraft;
