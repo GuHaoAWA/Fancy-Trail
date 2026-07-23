@@ -1,16 +1,16 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.guhao.fancy_trail.mixin",
+  "package": "com.inspiration_mushroom.fancy_trail.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "LivingEntityPatchModelMatrixMixin"
   ],
   "client": [
-    "com.inspiration_mushroom.fancy_trail.mixin.AnimationTrailParticleMixin",
-    "com.inspiration_mushroom.fancy_trail.mixin.AbstractTrailParticleAccessor",
-    "com.inspiration_mushroom.fancy_trail.mixin.AnimationTrailParticleFieldAccessor",
-    "com.inspiration_mushroom.fancy_trail.mixin.WeaponAfterimageCaptureMixin",
-    "com.inspiration_mushroom.fancy_trail.mixin.LivingEntityPatchModelMatrixMixin"
+    "AbstractTrailParticleAccessor",
+    "AnimationTrailParticleFieldAccessor",
+    "AnimationTrailParticleMixin",
+    "WeaponAfterimageCaptureMixin"
   ],
   "injectors": {
     "defaultRequire": 1
