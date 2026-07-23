@@ -1,1 +1,1 @@
-MixinConnector: com.guhao.fancy_trail.MixinConnector
+MixinConnector: com.inspiration_mushroom.fancy_trail.MixinConnector

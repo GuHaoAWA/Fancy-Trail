@@ -6,11 +6,11 @@
   "mixins": [
   ],
   "client": [
-    "AnimationTrailParticleMixin",
-    "AbstractTrailParticleAccessor",
-    "AnimationTrailParticleFieldAccessor",
-    "WeaponAfterimageCaptureMixin",
-    "LivingEntityPatchModelMatrixMixin"
+    "com.inspiration_mushroom.fancy_trail.mixin.AnimationTrailParticleMixin",
+    "com.inspiration_mushroom.fancy_trail.mixin.AbstractTrailParticleAccessor",
+    "com.inspiration_mushroom.fancy_trail.mixin.AnimationTrailParticleFieldAccessor",
+    "com.inspiration_mushroom.fancy_trail.mixin.WeaponAfterimageCaptureMixin",
+    "com.inspiration_mushroom.fancy_trail.mixin.LivingEntityPatchModelMatrixMixin"
   ],
   "injectors": {
     "defaultRequire": 1
