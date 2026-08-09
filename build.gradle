@@ -16,7 +16,7 @@ version = '1.20.1'
 group = 'com.inspiration_mushroom.fancy_trail'
 
 base {
-    archivesName =  'Fancy-Trail-'+ "1.2.4"
+    archivesName =  'Fancy-Trail-'+ "1.2.5"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
