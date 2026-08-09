@@ -10,6 +10,8 @@ import java.io.IOException;
 import static com.guhao.vix.client.pipeline.PostEffectPipelines.shaderOrthoMatrix;
 
 public class UnityComposite extends PostPassBase {
+    private static final float DEFAULT_BLOOM_INTENSITY = 5.0f;
+
     public UnityComposite(EffectInstance effect) {
         super(effect);
     }
@@ -19,6 +21,14 @@ public class UnityComposite extends PostPassBase {
     }
 
     public void process(RenderTarget inTarget, RenderTarget outTarget, RenderTarget downTexture, RenderTarget bg) {
+        process(inTarget, outTarget, downTexture, bg, DEFAULT_BLOOM_INTENSITY);
+    }
+
+    /**
+     * 带泛光强度的版本。intensity < 0 时使用 JSON 默认值（5.0）。
+     */
+    public void process(RenderTarget inTarget, RenderTarget outTarget, RenderTarget downTexture,
+                        RenderTarget bg, float bloomIntensity) {
         prevProcess(inTarget, outTarget);
         inTarget.unbindWrite();
 
@@ -27,7 +37,10 @@ public class UnityComposite extends PostPassBase {
 
         this.effect.safeGetUniform("ProjMat").set(shaderOrthoMatrix);
         this.effect.safeGetUniform("OutSize").set((float) outTarget.width, (float) outTarget.height);
-        //this.effect.safeGetUniform("InSize").set((float) inTarget.width, (float) inTarget.height);
+
+        float intensity = Float.isFinite(bloomIntensity) ? bloomIntensity : DEFAULT_BLOOM_INTENSITY;
+        this.effect.safeGetUniform("BloomIntensive").set(intensity);
+
         effect.setSampler("DownTexture", downTexture::getColorTextureId);
         effect.setSampler("Background", bg::getColorTextureId);
 

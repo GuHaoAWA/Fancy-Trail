@@ -12,6 +12,10 @@ public class BloomTrailRenderType extends BloomParticleRenderType {
         super(renderTypeID, tex);
     }
 
+    public BloomTrailRenderType(ResourceLocation renderTypeID, ResourceLocation tex, float bloomIntensity) {
+        super(renderTypeID, tex, bloomIntensity);
+    }
+
     @Override
     protected ShaderInstance getShader() {
         return GameRenderer.particleShader;

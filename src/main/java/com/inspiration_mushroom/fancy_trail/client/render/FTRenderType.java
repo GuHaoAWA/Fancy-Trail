@@ -34,6 +34,7 @@ public class FTRenderType {
     }
     public static final ResourceLocation NoneTexture = GetTexture("none");
     public static final HashMap<ResourceLocation, BloomParticleRenderType> BloomRenderTypes = Maps.newHashMap();
+    private static final HashMap<ResourceLocation, HashMap<Integer, BloomTrailRenderType>> BloomRenderTypesByIntensity = Maps.newHashMap();
     private static final HashMap<ResourceLocation, BackgroundBlendRenderType> BackgroundBlendCache = Maps.newHashMap();
     private static int backgroundBlendIdx = 0;
 
@@ -92,13 +93,21 @@ public class FTRenderType {
     }
 
     public static BloomTrailRenderType getBloomTrailRT(ResourceLocation texture) {
-        if (BloomRenderTypes.containsKey(texture)) {
-            return (BloomTrailRenderType) BloomRenderTypes.get(texture);
-        } else {
-            BloomTrailRenderType bloomType = new BloomTrailRenderType(OjangUtils.newRL(FT.MODID, "bt_" + bloomIdx++), texture);
-            BloomRenderTypes.put(texture, bloomType);
-            return bloomType;
+        return getBloomTrailRT(texture, BloomParticleRenderType.DEFAULT_BLOOM_INTENSITY);
+    }
+
+    public static BloomTrailRenderType getBloomTrailRT(ResourceLocation texture, float bloomIntensity) {
+        float sanitizedIntensity = BloomSettings.sanitizeIntensity(bloomIntensity);
+        int intensityKey = Float.floatToIntBits(sanitizedIntensity);
+        HashMap<Integer, BloomTrailRenderType> renderTypes = BloomRenderTypesByIntensity.computeIfAbsent(texture, ignored -> Maps.newHashMap());
+
+        BloomTrailRenderType bloomType = renderTypes.get(intensityKey);
+        if (bloomType == null) {
+            bloomType = new BloomTrailRenderType(OjangUtils.newRL(FT.MODID, "bt_" + bloomIdx++), texture, sanitizedIntensity);
+            renderTypes.put(intensityKey, bloomType);
+            BloomRenderTypes.putIfAbsent(texture, bloomType);
         }
+        return bloomType;
     }
 
     // 刀光专用的残像效果

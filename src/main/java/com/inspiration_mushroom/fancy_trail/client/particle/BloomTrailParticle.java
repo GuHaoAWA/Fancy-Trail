@@ -1,6 +1,7 @@
 package com.inspiration_mushroom.fancy_trail.client.particle;
 
 import com.inspiration_mushroom.fancy_trail.client.render.FTRenderType;
+import com.inspiration_mushroom.fancy_trail.client.render.custom.BloomSettings;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -30,8 +31,17 @@ import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class BloomTrailParticle extends AnimationTrailParticle {
+    private final BloomSettings bloomSettings;
+
     protected BloomTrailParticle(ClientLevel level, LivingEntityPatch<?> owner, Joint joint, AssetAccessor<? extends StaticAnimation> animation, TrailInfo trailInfo) {
+        this(level, owner, joint, animation, trailInfo, BloomSettings.get(trailInfo));
+    }
+
+    protected BloomTrailParticle(ClientLevel level, LivingEntityPatch<?> owner, Joint joint, AssetAccessor<? extends StaticAnimation> animation,
+                                 TrailInfo trailInfo, BloomSettings bloomSettings) {
         super(level, owner, joint, animation, trailInfo);
+        this.bloomSettings = bloomSettings;
+        applyBloomColor();
     }
 
     @Override
@@ -39,9 +49,18 @@ public class BloomTrailParticle extends AnimationTrailParticle {
         return false;
     }
 
+    /** 应用 bloom 配置的颜色覆盖拖尾默认顶点色 */
+    private void applyBloomColor() {
+        if (bloomSettings != BloomSettings.DEFAULT) {
+            this.rCol = bloomSettings.r;
+            this.gCol = bloomSettings.g;
+            this.bCol = bloomSettings.b;
+        }
+    }
+
     @Override
     public ParticleRenderType getRenderType() {
-        return FTRenderType.getBloomTrailRT(trailInfo.texturePath());
+        return FTRenderType.getBloomTrailRT(trailInfo.texturePath(), bloomSettings.intensity);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -80,18 +99,26 @@ public class BloomTrailParticle extends AnimationTrailParticle {
             }
 
             TrailInfo result = trailInfo.get().get(idx);
+            BloomSettings bloomSettings = BloomSettings.find(result);
 
             if (result.hand() != null) {
                 ItemStack stack = entitypatch.getOriginal().getItemInHand(result.hand());
                 RenderItemBase renderItemBase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
 
                 if (renderItemBase != null && renderItemBase.trailInfo() != null) {
-                    result = renderItemBase.trailInfo().overwrite(result);
+                    TrailInfo itemTrailInfo = renderItemBase.trailInfo();
+                    if (bloomSettings == null) {
+                        bloomSettings = BloomSettings.find(itemTrailInfo);
+                    }
+                    result = itemTrailInfo.overwrite(result);
                 }
             }
             result = entitypatch.getEntityDecorations().getModifiedTrailInfo(result, result.hand() == null ? CapabilityItem.EMPTY : entitypatch.getAdvancedHoldingItemCapability(result.hand()));
             if (result.playable()) {
-                return new BloomTrailParticle(level, entitypatch, entitypatch.getArmature().searchJointById(jointId), animation, result);
+                if (bloomSettings == null) {
+                    bloomSettings = BloomSettings.get(result);
+                }
+                return new BloomTrailParticle(level, entitypatch, entitypatch.getArmature().searchJointById(jointId), animation, result, bloomSettings);
             } else {
                 return null;
             }

@@ -15,13 +15,25 @@ import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static net.minecraft.client.Minecraft.ON_OSX;
 
 public class BloomParticleRenderType extends PostParticleRenderType {
-    public static final PostEffectPipelines.Pipeline ppl = new Pipeline(OjangUtils.newRL(FT.MODID, "bloom_particle"));
+    public static final float DEFAULT_BLOOM_INTENSITY = 5.0f;
+    private static final Map<Integer, Pipeline> PIPELINES = new ConcurrentHashMap<>();
+    public static final PostEffectPipelines.Pipeline ppl = getOrCreatePipeline(DEFAULT_BLOOM_INTENSITY);
+
+    private final Pipeline pipeline;
 
     public BloomParticleRenderType(ResourceLocation renderTypeID, ResourceLocation tex) {
+        this(renderTypeID, tex, DEFAULT_BLOOM_INTENSITY);
+    }
+
+    public BloomParticleRenderType(ResourceLocation renderTypeID, ResourceLocation tex, float bloomIntensity) {
         super(renderTypeID, tex);
+        this.pipeline = getOrCreatePipeline(bloomIntensity);
     }
 
     private static int NumMul(int a, float b) {
@@ -30,19 +42,32 @@ public class BloomParticleRenderType extends PostParticleRenderType {
 
     @Override
     public PostEffectPipelines.Pipeline getPipeline() {
-        return ppl;
+        return pipeline;
+    }
+
+    private static Pipeline getOrCreatePipeline(float bloomIntensity) {
+        float sanitizedIntensity = BloomSettings.sanitizeIntensity(bloomIntensity);
+        int intensityKey = Float.floatToIntBits(sanitizedIntensity);
+        return PIPELINES.computeIfAbsent(intensityKey, ignored -> new Pipeline(
+                OjangUtils.newRL(FT.MODID, "bloom_particle/" + Integer.toHexString(intensityKey)),
+                sanitizedIntensity
+        ));
     }
 
     public static class Pipeline extends PostEffectPipelines.Pipeline {
-        RenderTarget[] blur;
-        RenderTarget[] blur_;
+        private static RenderTarget[] blur;
+        private static RenderTarget[] blur_;
+        private static RenderTarget temp;
 
-        //private static ResourceLocation bloom_particle_target = OjangUtils.newRL(FT.MODID, "bloom_particle_target");
-        //private static ResourceLocation bloom_particle_blur = OjangUtils.newRL(FT.MODID, "bloom_particle_blur");
-        //private static ResourceLocation bloom_particle_temp = OjangUtils.newRL(FT.MODID, "bloom_particle_temp");
-        RenderTarget temp;
+        private final float bloomIntensity;
+
         public Pipeline(ResourceLocation name) {
+            this(name, DEFAULT_BLOOM_INTENSITY);
+        }
+
+        public Pipeline(ResourceLocation name, float bloomIntensity) {
             super(name);
+            this.bloomIntensity = BloomSettings.sanitizeIntensity(bloomIntensity);
         }
 
         void handlePasses(RenderTarget src) {
@@ -62,7 +87,8 @@ public class BloomParticleRenderType extends PostParticleRenderType {
             FTPostPasses.upSampler.process(blur_[2], blur_[1], blur[1]);  // 8_ -> 4_
             FTPostPasses.upSampler.process(blur_[1], blur_[0], blur[0]);  // 4_ -> 2_
 
-            FTPostPasses.unity_composite.process(blur_[0], temp, src, Minecraft.getInstance().getMainRenderTarget());
+            FTPostPasses.unity_composite.process(blur_[0], temp, src,
+                    Minecraft.getInstance().getMainRenderTarget(), bloomIntensity);
 
             FTPostPasses.blit.process(temp, Minecraft.getInstance().getMainRenderTarget());
 

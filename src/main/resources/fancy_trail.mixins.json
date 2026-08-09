@@ -4,13 +4,14 @@
   "package": "com.inspiration_mushroom.fancy_trail.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "LivingEntityPatchModelMatrixMixin"
   ],
   "client": [
     "AbstractTrailParticleAccessor",
     "AnimationTrailParticleFieldAccessor",
     "AnimationTrailParticleMixin",
-    "WeaponAfterimageCaptureMixin"
+    "WeaponAfterimageCaptureMixin",
+    "LivingEntityPatchModelMatrixMixin",
+    "TrailInfoBloomMixin"
   ],
   "injectors": {
     "defaultRequire": 1
