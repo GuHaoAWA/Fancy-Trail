@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class BloomSettings {
-    public static final BloomSettings DEFAULT = new BloomSettings(255, 255, 255, 1.0f);
+    public static final BloomSettings DEFAULT = new BloomSettings(255, 255, 255, 5.0f);
 
     private static final Map<ResourceLocation, BloomSettings> TEXTURE_SETTINGS = new ConcurrentHashMap<>();
     private static final ReferenceQueue<TrailInfo> TRAIL_INFO_QUEUE = new ReferenceQueue<>();
@@ -44,7 +44,7 @@ public final class BloomSettings {
             }
         }
 
-        float intensity = bloom.has("intensity") ? bloom.get("intensity").getAsFloat() : 1.0f;
+        float intensity = bloom.has("intensity") ? bloom.get("intensity").getAsFloat() : DEFAULT.intensity;
         return new BloomSettings(r, g, b, intensity);
     }
 
