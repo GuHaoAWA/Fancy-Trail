@@ -1,210 +1,41 @@
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-    }
-}
-
-plugins {
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    id 'org.spongepowered.mixin' version '0.7.+'
-}
-
-version = '1.20.1'
-group = 'com.inspiration_mushroom.fancy_trail'
-
-base {
-    archivesName =  'Fancy-Trail-'+ "1.2.6"
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-
-    mappings channel: mapping_channel, version: mapping_version
-
-    copyIdeResources = true
-
-     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-
-        configureEach {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-            arg "-mixin.config=fancy_trail.mixins.json"
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
-        }
-
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-
-            workingDirectory project.file('run-data')
-
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
-    }
-}
-reobf {
-    jarJar {}
-}
-tasks.named('build').configure {
-    dependsOn tasks.named('jarJar')
-    dependsOn tasks.named('reobfJarJar')
-}
-tasks.named('jarJar').configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1',
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs"            : "fancy_trail.mixins.json"
-        ])
-    }
-
-    finalizedBy 'reobfJarJar'
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
+// 1.21.1 NeoForge port build — MDG 2.0 template (same shape as our efn/vix ports).
+plugins { id 'net.neoforged.moddev' version '2.0.141' }
+group = project.findProperty('mod_group_id')
+version = project.findProperty('mod_version')
+base { archivesName = 'Fancy-Trail-1.21.1-neoforge' }
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 repositories {
-
-    maven {
-        url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        url "https://repo.spongepowered.org/repository/maven-public/"
-    }
-    maven {
-        name = 'GeckoLib'
-        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
-        content {
-            includeGroupByRegex("software\\.bernie.*")
-            includeGroup("com.eliotlash.mclib")
-        }
-    }
-    repositories {
-        maven { url = "https://maven.bawnorton.com/releases" }
-    }
-    repositories {
-        maven { url = 'https://maven.fallenbreath.me/releases' }
-    }
-
-    maven {
-        url "https://repo.spongepowered.org/repository/maven-public/"
-    }
-
-
-     flatDir {
-         dir 'libs'
-     }
+    mavenCentral()
+    maven { url = 'https://maven.neoforged.net/releases' }
+    flatDir { dirs 'libs' }
 }
-
-dependencies {
-
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation fg.deobf("curse.maven:embeddium-908741:5556138")
-    implementation fg.deobf("curse.maven:oculus-581495:5299671")
-    implementation fg.deobf("curse.maven:epic-fight-mod-405076:7173243")
-    implementation fg.deobf("curse.maven:guhaos-vix-1531111:8401057")
-
-//    implementation fg.deobf("curse.maven:tickrate-changer-890786:4653011")
-    implementation 'me.fallenbreath:conditional-mixin-forge:0.6.4'
-    compileOnly(annotationProcessor("com.bawnorton.mixinsquared:mixinsquared-common:0.2.0-beta.6"))
-    implementation(jarJar("com.bawnorton.mixinsquared:mixinsquared-forge:0.2.0-beta.6")) {
-        jarJar.ranged(it, "[0.2.0-beta.6,)")
-    }
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
-        jarJar.ranged(it, "[0.4.1,)")
-    }
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-}
-mixin {
-    add sourceSets.main, "fancy_trail.mixin-refmap.json"
-    config 'fancy_trail.mixins.json'
-}
-
 tasks.named('processResources', ProcessResources).configure {
-    var replaceProperties = [
-            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version, forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
-            mod_authors: mod_authors, mod_description: mod_description,
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    var props = [mod_id: project.findProperty('mod_id'), mod_name: project.findProperty('mod_name'),
+                 mod_license: project.findProperty('mod_license'), mod_version: project.findProperty('mod_version'),
+                 mod_authors: project.findProperty('mod_authors'), mod_description: project.findProperty('mod_description')]
+    inputs.properties props
+    filesMatching(['META-INF/neoforge.mods.toml']) { expand props }
 }
-
-// Example for how to get properties into the manifest for reading at runtime.
-tasks.named('jar', Jar).configure {
-    manifest {
-        attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "fancy_trail.mixins.json"
-        ])
+neoForge {
+    version = project.findProperty('neoforge_version')
+    // AT converted to 1.21.1 Mojmap names (same entry list as our vix port; see that port's
+    // validated descriptor drift notes: Camera.getMaxZoom (D)D -> (F)F, Camera.move (DDD)V ->
+    // (FFF)V, GameRenderer.positionColorTexShader removed).
+    validateAccessTransformers = true
+    parchment {
+        minecraftVersion = project.findProperty('parchment_mc')
+        mappingsVersion  = project.findProperty('parchment_version')
     }
-
-
-    finalizedBy 'reobfJar'
-}
-
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifact jar
-        }
+    runs {
+        client { client(); gameDirectory = project.file('run') }
+        server { server(); gameDirectory = project.file('run-server'); programArgument 'nogui' }
     }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/mcmodsrepo"
-        }
-    }
+    mods { fancy_trail { sourceSet sourceSets.main } }
 }
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+dependencies {
+    implementation files('libs/epicfight.jar') // Epic Fight 21.17.3.1 (our stack)
+    implementation files('libs/vix.jar')       // VIX 1.0.9 (our 1.21.1 port)
+    // Upstream 1.20.1 embeddium/oculus compat and the mixinsquared/mixinextras jarJar plumbing
+    // were dropped: no fancy-trail source imports them (dead perf-compat on 1.21.1 NeoForge).
 }
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }

@@ -3,50 +3,47 @@ package com.inspiration_mushroom.fancy_trail;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class FTClientConfig {
     public static final ClientConfig CLIENT;
-    public static final ForgeConfigSpec CLIENT_SPEC;
+    public static final ModConfigSpec CLIENT_SPEC;
 
     static {
-        final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        final Pair<ClientConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(ClientConfig::new);
         CLIENT_SPEC = specPair.getRight();
         CLIENT = specPair.getLeft();
     }
 
     public static class ClientConfig {
-        public final ForgeConfigSpec.DoubleValue starryTrailIntensity;
-        public final ForgeConfigSpec.DoubleValue starryTrailStarScale;
-        public final ForgeConfigSpec.DoubleValue starryTrailOpacity;
-        public final ForgeConfigSpec.IntValue starryTrailLayers;
-        public final ForgeConfigSpec.ConfigValue<String> starryTrailTexture;
+        public final ModConfigSpec.DoubleValue starryTrailIntensity;
+        public final ModConfigSpec.DoubleValue starryTrailStarScale;
+        public final ModConfigSpec.DoubleValue starryTrailOpacity;
+        public final ModConfigSpec.IntValue starryTrailLayers;
+        public final ModConfigSpec.ConfigValue<String> starryTrailTexture;
 
-        public final ForgeConfigSpec.DoubleValue chromaticEffect;
+        public final ModConfigSpec.DoubleValue chromaticEffect;
 
-        // 新增配置项
-        public final ForgeConfigSpec.DoubleValue additionalParticleSpeed;
-        public final ForgeConfigSpec.ConfigValue<String> additionalParticleType;
+        public final ModConfigSpec.DoubleValue additionalParticleSpeed;
+        public final ModConfigSpec.ConfigValue<String> additionalParticleType;
 
-        // 新增：扰动效果配置
-        public final ForgeConfigSpec.DoubleValue flowingIntensity;
-        public final ForgeConfigSpec.DoubleValue flowingSpeed;
+        public final ModConfigSpec.DoubleValue flowingIntensity;
+        public final ModConfigSpec.DoubleValue flowingSpeed;
 
-        public final ForgeConfigSpec.BooleanValue isOpenAir;
+        public final ModConfigSpec.BooleanValue isOpenAir;
 
-        // 武器残像配置
-        public final ForgeConfigSpec.BooleanValue weaponAfterimageEnabled;
-        public final ForgeConfigSpec.IntValue weaponAfterimageGhostCount;
-        public final ForgeConfigSpec.DoubleValue weaponAfterimageMaxAlpha;
-        public final ForgeConfigSpec.DoubleValue weaponAfterimageFadeExponent;
-        public final ForgeConfigSpec.IntValue weaponAfterimageMaxAgeTicks;
+        public final ModConfigSpec.BooleanValue weaponAfterimageEnabled;
+        public final ModConfigSpec.IntValue weaponAfterimageGhostCount;
+        public final ModConfigSpec.DoubleValue weaponAfterimageMaxAlpha;
+        public final ModConfigSpec.DoubleValue weaponAfterimageFadeExponent;
+        public final ModConfigSpec.IntValue weaponAfterimageMaxAgeTicks;
 
-        public ClientConfig(ForgeConfigSpec.Builder builder) {
+        public ClientConfig(ModConfigSpec.Builder builder) {
             builder.comment("Fancy Trail Client Configuration")
                     .push("starry_trail");
 
@@ -105,7 +102,6 @@ public class FTClientConfig {
 
             builder.pop();
 
-            // 新增：扰动效果配置组
             builder.push("flowing_effect");
 
             flowingIntensity = builder
@@ -166,11 +162,11 @@ public class FTClientConfig {
         }
     }
 
-    public static void init() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_SPEC, "fancy_trail-client.toml");
+    // 1.21 NeoForge: config registration moved onto the ModContainer (was ModLoadingContext.get()).
+    public static void init(ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.CLIENT, CLIENT_SPEC, "fancy_trail-client.toml");
     }
 
-    // Starry Trail 获取配置值的方法
     public static float getIntensity() {
         return CLIENT.starryTrailIntensity.get().floatValue();
     }
@@ -195,7 +191,7 @@ public class FTClientConfig {
                 return ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
             }
         } catch (Exception e) {
-            // 如果解析失败，返回默认值
+            // fall through to the default below on parse failure
         }
         return ResourceLocation.fromNamespaceAndPath("fancy_trail", "textures/effect/star.png");
     }
@@ -204,7 +200,6 @@ public class FTClientConfig {
         return CLIENT.chromaticEffect.get().floatValue();
     }
 
-    // 新增：获取附加粒子配置
     public static float getAdditionalParticleSpeed() {
         return CLIENT.additionalParticleSpeed.get().floatValue();
     }
@@ -215,7 +210,8 @@ public class FTClientConfig {
         try {
             ResourceLocation particleLocation = ResourceLocation.tryParse(particleTypeString);
             if (particleLocation != null) {
-                ParticleType<?> particleType = ForgeRegistries.PARTICLE_TYPES.getValue(particleLocation);
+                // 1.21 NeoForge: ForgeRegistries.PARTICLE_TYPES -> vanilla BuiltInRegistries.PARTICLE_TYPE.
+                ParticleType<?> particleType = BuiltInRegistries.PARTICLE_TYPE.get(particleLocation);
                 if (particleType instanceof SimpleParticleType simpleParticleType) {
                     return simpleParticleType;
                 } else if (particleType != null) {
@@ -231,7 +227,6 @@ public class FTClientConfig {
         return ParticleTypes.END_ROD;
     }
 
-    // 新增：获取扰动效果配置
     public static float getflowingIntensity() {
         return CLIENT.flowingIntensity.get().floatValue();
     }
@@ -241,24 +236,24 @@ public class FTClientConfig {
     }
 
     /**
-     * 获取粒子类型的注册名（用于显示或验证）
+     * Registry name of the additional-particle type (display/validation).
      */
     public static String getAdditionalParticleTypeString() {
         return CLIENT.additionalParticleType.get();
     }
 
     /**
-     * 验证粒子类型是否存在
+     * Whether the given particle type id resolves to a SimpleParticleType.
      */
     public static boolean isValidParticleType(String particleTypeString) {
         try {
             ResourceLocation particleLocation = ResourceLocation.tryParse(particleTypeString);
             if (particleLocation != null) {
-                ParticleType<?> particleType = ForgeRegistries.PARTICLE_TYPES.getValue(particleLocation);
+                ParticleType<?> particleType = BuiltInRegistries.PARTICLE_TYPE.get(particleLocation);
                 return particleType instanceof SimpleParticleType;
             }
         } catch (Exception e) {
-            // 忽略异常
+            // ignored
         }
         return false;
     }
@@ -267,7 +262,6 @@ public class FTClientConfig {
         return CLIENT.isOpenAir.get();
     }
 
-    // 武器残像配置 getter
     public static boolean getWeaponAfterimageEnabled() {
         return CLIENT.weaponAfterimageEnabled.get();
     }
@@ -288,7 +282,7 @@ public class FTClientConfig {
         return CLIENT.weaponAfterimageMaxAgeTicks.get();
     }
 
-    // 设置配置值的方法（用于运行时修改）
+
     public static void setChromaticEffect(float value) {
         CLIENT.chromaticEffect.set((double) value);
     }
@@ -313,7 +307,6 @@ public class FTClientConfig {
         CLIENT.starryTrailTexture.set(texture);
     }
 
-    // 新增：设置附加粒子配置
     public static void setAdditionalParticleSpeed(float value) {
         CLIENT.additionalParticleSpeed.set((double) value);
     }
@@ -322,7 +315,6 @@ public class FTClientConfig {
         CLIENT.additionalParticleType.set(particleType);
     }
 
-    // 新增：设置扰动效果配置
     public static void setflowingIntensity(float value) {
         CLIENT.flowingIntensity.set((double) value);
     }

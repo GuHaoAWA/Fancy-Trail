@@ -15,9 +15,9 @@ public class BackgroundBlend extends PostPassBase {
         super(resourceLocation, resmgr);
     }
 
-    public void process(RenderTarget sceneTarget,     // 主场景（背景）
-                        RenderTarget particleTarget,  // 粒子纹理（刀光）
-                        RenderTarget outTarget,       // 输出目标
+    public void process(RenderTarget sceneTarget,     // main scene (background)
+                        RenderTarget particleTarget,  // particle texture (blade trail)
+                        RenderTarget outTarget,       // output target
                         float blendStrength,
                         float glowIntensity,
                         float alphaBoost,
@@ -27,11 +27,11 @@ public class BackgroundBlend extends PostPassBase {
 
         RenderSystem.viewport(0, 0, outTarget.width, outTarget.height);
 
-        // 设置采样器 - 模仿 AirDisturbance 的模式
-        this.effect.setSampler("DiffuseSampler", sceneTarget::getColorTextureId);      // 主场景
-        this.effect.setSampler("Mask", particleTarget::getColorTextureId);             // 粒子纹理
+        // samplers - mirrors the AirDisturbance pattern
+        this.effect.setSampler("DiffuseSampler", sceneTarget::getColorTextureId);      // main scene
+        this.effect.setSampler("Mask", particleTarget::getColorTextureId);             // particle texture
 
-        // 设置统一变量
+        // uniforms
         this.effect.safeGetUniform("ProjMat").set(shaderOrthoMatrix);
         this.effect.safeGetUniform("OutSize").set((float) outTarget.width, (float) outTarget.height);
         this.effect.safeGetUniform("BlendStrength").set(blendStrength);

@@ -8,6 +8,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -50,8 +51,9 @@ public class AfterImageRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class AfterImageRenderType extends PostParticleRenderType {
         private static final ResourceLocation tmpTarget = OjangUtils.newRL(FT.MODID, "after_image_tmp");
 
         private float currentTime = 0.0f;
-        private float[] previousFrameBuffer; // 存储上一帧用于残影效果
+        private float[] previousFrameBuffer; // stores the previous frame for the after-image effect
         private boolean animationStarted = false;
 
         public Pipeline(ResourceLocation name, int priority) {
@@ -116,14 +118,14 @@ public class AfterImageRenderType extends PostParticleRenderType {
 
             updateAnimation();
 
-            // 根据运动速度动态调整残影强度
+            // scale after-image strength with movement speed
             float dynamicStrength = calculateDynamicStrength();
             float dynamicDecay = calculateDynamicDecay();
 
             FTPostPasses.afterImage.process(
-                    main,    // 输入：主渲染目标
-                    src,     // 输入：粒子渲染目标
-                    tmp,     // 输出：临时目标
+                    main,    // input: main render target
+                    src,     // input: particle render target
+                    tmp,     // output: temp target
                     dynamicStrength,
                     currentTime,
                     dynamicDecay,
@@ -139,31 +141,31 @@ public class AfterImageRenderType extends PostParticleRenderType {
 
         private void updateAnimation() {
             if (animationStarted) {
-                currentTime += 0.016f; // 约60fps的增量
+                currentTime += 0.016f; // ~60fps time increment
             }
         }
 
         private float calculateDynamicStrength() {
-            // 根据时间动态调整残影强度，产生呼吸效果
+            // pulse the after-image strength over time (breathing effect)
             float pulse = 0.8f + 0.2f * (float)Math.sin(currentTime * 3.0f);
-            return 0.3f * pulse; // 基础强度0.3，带脉冲效果
+            return 0.3f * pulse; // base strength 0.3 with pulse
         }
 
         private float calculateDynamicDecay() {
-            // 动态衰减速度
+            // dynamic decay speed
             return 2.0f + (float)Math.sin(currentTime * 2.0f) * 0.5f;
         }
 
         private float getMotionBlurFactor() {
-            return 0.6f; // 运动模糊强度
+            return 0.6f; // motion blur strength
         }
 
         private float getColorShift() {
-            return 0.1f * (float)Math.sin(currentTime * 2.5f); // 动态色彩偏移
+            return 0.1f * (float)Math.sin(currentTime * 2.5f); // dynamic color shift
         }
 
         private float getDirectionX() {
-            return (float)Math.cos(currentTime * 2.0f); // 动态方向
+            return (float)Math.cos(currentTime * 2.0f); // dynamic direction
         }
 
         private float getDirectionY() {

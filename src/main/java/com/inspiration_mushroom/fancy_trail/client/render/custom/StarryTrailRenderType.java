@@ -10,6 +10,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -49,8 +50,9 @@ public class StarryTrailRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override
@@ -106,7 +108,7 @@ public class StarryTrailRenderType extends PostParticleRenderType {
 
             currentTime += 0.05f;
 
-            // 获取实例参数
+            // per-instance parameters
             StarryTrailRenderType renderType = getStarryRenderType();
             float intensity = renderType != null ? renderType.intensity : FTClientConfig.getIntensity();
             float starScale = renderType != null ? renderType.starScale : FTClientConfig.getStarScale();
@@ -115,14 +117,14 @@ public class StarryTrailRenderType extends PostParticleRenderType {
 
             ResourceLocation starTexture = getValidStarTexture(renderType);
 
-            // 获取贴图ID
+            // texture GL id
             int starTextureId = Minecraft.getInstance().getTextureManager().getTexture(starTexture).getId();
 
             FTPostPasses.starry_sword_trail.process(
-                    main,           // 输入：主渲染目标
-                    src,            // 输入：粒子渲染目标
-                    tmp,            // 输出：临时目标
-                    starTextureId,  // 星星贴图ID
+                    main,           // input: main render target
+                    src,            // input: particle render target
+                    tmp,            // output: temp target
+                    starTextureId,  // star texture GL id
                     currentTime,
                     intensity,
                     starScale,
@@ -135,13 +137,13 @@ public class StarryTrailRenderType extends PostParticleRenderType {
         }
 
         private StarryTrailRenderType getStarryRenderType() {
-            // 这里需要根据实际架构获取当前实例
-            // 暂时返回null，使用默认参数
+            // would need the current instance from the actual architecture;
+            // returns null for now -> default parameters are used
             return null;
         }
 
         private ResourceLocation getDefaultStarTexture() {
-            // 默认星星贴图
+            // default star texture
             return ResourceLocation.fromNamespaceAndPath(FT.MODID, "textures/effect/star.png");
         }
 
@@ -163,7 +165,7 @@ public class StarryTrailRenderType extends PostParticleRenderType {
 
 
 
-    // 自定义参数构造方法
+    // custom-parameter factory
     public static StarryTrailRenderType createCustom(ResourceLocation name, ResourceLocation location,
                                                      float intensity, float starScale, float opacity, int layers,
                                                      ResourceLocation starTexture) {

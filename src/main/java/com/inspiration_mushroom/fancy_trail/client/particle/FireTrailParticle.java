@@ -10,14 +10,15 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.api.animation.*;
 import yesman.epicfight.api.animation.types.StaticAnimation;
@@ -28,7 +29,7 @@ import yesman.epicfight.api.physics.bezier.CubicBezierCurve;
 import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.api.utils.math.Vec3f;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -154,7 +155,15 @@ public class FireTrailParticle extends AnimationTrailParticle {
 
             for (int j = 0; j < 1; j++) {
                 Vec3 particlePos = startPos.add(direction.scale(j * 0.5));
-                if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FIRE_ASPECT, owner.getOriginal()) >= 1) {
+                // 1.21 data-driven enchantments: Enchantments.FIRE_ASPECT is a ResourceKey now;
+                // resolve its Holder through the level's registry access before asking
+                // EnchantmentHelper for the level (0 when the registry/entry is missing).
+                int fireAspectLevel = owner.getOriginal().level().registryAccess()
+                        .registry(Registries.ENCHANTMENT)
+                        .flatMap(registry -> registry.getHolder(Enchantments.FIRE_ASPECT))
+                        .map(holder -> EnchantmentHelper.getEnchantmentLevel(holder, owner.getOriginal()))
+                        .orElse(0);
+                if (fireAspectLevel >= 1) {
                     level.addParticle(ParticleTypes.FLAME, true,
                             particlePos.x, particlePos.y, particlePos.z,
                             speed * direction.x, speed * direction.y, speed * direction.z);
@@ -221,7 +230,7 @@ public class FireTrailParticle extends AnimationTrailParticle {
 
             if (result.hand() != null) {
                 ItemStack stack = entitypatch.getOriginal().getItemInHand(result.hand());
-                RenderItemBase renderItemBase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+                RenderItemBase renderItemBase = RenderEngine.getInstance().getItemRenderer(stack);
 
                 if (renderItemBase != null && renderItemBase.trailInfo() != null) {
                     result = renderItemBase.trailInfo().overwrite(result);

@@ -40,7 +40,7 @@ public class RGBTrail extends PostPassBase {
         inTarget.unbindRead();
     }
 
-    // 简化版本
+    // simplified variant
     public void process(RenderTarget inTarget, RenderTarget mask, RenderTarget outTarget, float time) {
         process(inTarget, mask, outTarget, time, 1.0f, 3.0f, 0.08f, 1.2f, 0.8f, 0.7f);
     }

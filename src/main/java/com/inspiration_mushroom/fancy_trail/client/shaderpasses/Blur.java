@@ -5,6 +5,7 @@ import com.guhao.vix.client.shaderpasses.PostPassBase;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -36,12 +37,15 @@ public class Blur extends PostPassBase {
         outTarget.clear(Minecraft.ON_OSX);
         outTarget.bindWrite(false);
         RenderSystem.depthFunc(519);
-        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferbuilder.vertex(0.0D, 0.0D, 700).endVertex();
-        bufferbuilder.vertex(inTarget.width, 0.0D, 700).endVertex();
-        bufferbuilder.vertex(inTarget.width, inTarget.height, 700).endVertex();
-        bufferbuilder.vertex(0.0D, inTarget.height, 700).endVertex();
+        // 1.21 builder API: Tesselator.begin RETURNS the builder; vertex()/endVertex() ->
+        // addVertex(); the batch must be explicitly uploaded (BufferUploader.draw) — the 1.20.1
+        // original never drew this buffer itself, the next begin() flushed it implicitly.
+        BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bufferbuilder.addVertex(0.0F, 0.0F, 700.0F);
+        bufferbuilder.addVertex((float) inTarget.width, 0.0F, 700.0F);
+        bufferbuilder.addVertex((float) inTarget.width, (float) inTarget.height, 700.0F);
+        bufferbuilder.addVertex(0.0F, (float) inTarget.height, 700.0F);
+        BufferUploader.draw(bufferbuilder.buildOrThrow());
         RenderSystem.depthFunc(515);
         this.effect.clear();
         outTarget.unbindWrite();

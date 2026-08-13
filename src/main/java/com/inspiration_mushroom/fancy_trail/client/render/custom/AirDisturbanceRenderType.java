@@ -9,6 +9,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -36,8 +37,9 @@ public class AirDisturbanceRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override

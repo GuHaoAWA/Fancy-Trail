@@ -25,7 +25,6 @@ public class AnimationTrailParticleMixin {
         int jointId = (int) Double.doubleToRawLongBits(xSpeed);
         int idx = (int) Double.doubleToRawLongBits(ySpeed);
 
-        // 空气拖尾
         if (FTClientConfig.getAirIsOpen()) {
             level.addParticle(ClientModBusEvent.STATIC_AIR_TRAIL.get(),
                     Double.longBitsToDouble(eid),
@@ -35,6 +34,5 @@ public class AnimationTrailParticleMixin {
                     Double.longBitsToDouble(idx),
                     0);
         }
-
     }
 }

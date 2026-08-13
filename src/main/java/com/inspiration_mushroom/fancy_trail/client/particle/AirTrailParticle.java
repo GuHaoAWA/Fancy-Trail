@@ -14,8 +14,8 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import yesman.epicfight.api.animation.AnimationManager;
 import yesman.epicfight.api.animation.Joint;
@@ -23,7 +23,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.client.animation.property.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -44,11 +44,6 @@ public class AirTrailParticle extends AnimationTrailParticle {
         super.render(pBuffer, pRenderInfo, pPartialTicks);
         if (!PostEffectPipelines.isActive()) return;
         FTRenderType.airDisturbanceRenderType(trailInfo.texturePath()).callPipeline();
-    }
-
-    @Override
-    public boolean shouldCull() {
-        return false;
     }
 
     @Override
@@ -88,7 +83,7 @@ public class AirTrailParticle extends AnimationTrailParticle {
 
                 if (result.hand() != null) {
                     ItemStack stack = entitypatch.getOriginal().getItemInHand(result.hand());
-                    RenderItemBase renderItemBase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+                    RenderItemBase renderItemBase = RenderEngine.getInstance().getItemRenderer(stack);
                     if (renderItemBase != null && renderItemBase.trailInfo() != null) {
                         result = renderItemBase.trailInfo().overwrite(result);
                     }

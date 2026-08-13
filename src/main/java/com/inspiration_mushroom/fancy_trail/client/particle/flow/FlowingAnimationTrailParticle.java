@@ -9,8 +9,8 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -20,7 +20,7 @@ import yesman.epicfight.api.animation.types.StaticAnimation;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.client.animation.property.ClientAnimationProperties;
 import yesman.epicfight.api.client.animation.property.TrailInfo;
-import yesman.epicfight.client.ClientEngine;
+import yesman.epicfight.client.events.engine.RenderEngine;
 import yesman.epicfight.client.particle.AnimationTrailParticle;
 import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
@@ -94,7 +94,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
         ).mul(matrix);
     }
 
-    // 运动模糊效果
+    // motion blur
     private void applyMotionBlur(Vector4f pos1, Vector4f pos2, Vector4f pos3, Vector4f pos4, int index, int totalEdges) {
         if (this.owner != null && this.owner.getOriginal() != null) {
             net.minecraft.world.phys.Vec3 velocity = this.owner.getOriginal().getDeltaMovement();
@@ -142,7 +142,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
                 }
             }
 
-            // 动态效果参数
+            // dynamic effect parameters
             float time = (this.level.getGameTime() + partialTick + timeOffset) * 1.2f;
             float dynamicIntensity = calculateDynamicIntensity();
             float currentFlow = this.flowOffset;
@@ -157,32 +157,32 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
                 TrailEdge e1 = this.trailEdges.get(i);
                 TrailEdge e2 = this.trailEdges.get(i + 1);
 
-                // 应用扰动效果到顶点
+                // apply the distortion to the vertices
                 Vector4f pos1 = applyVertexDistortion(e1.start, time, dynamicIntensity, matrix4f);
                 Vector4f pos2 = applyVertexDistortion(e1.end, time, dynamicIntensity, matrix4f);
                 Vector4f pos3 = applyVertexDistortion(e2.end, time, dynamicIntensity, matrix4f);
                 Vector4f pos4 = applyVertexDistortion(e2.start, time, dynamicIntensity, matrix4f);
 
-                // 应用运动模糊
+                // apply motion blur
                 applyMotionBlur(pos1, pos2, pos3, pos4, i, edges);
 
-                // 计算UV坐标（流动效果）
+                // UV coordinates (flowing effect)
                 float uvFrom = (from + currentFlow) % 1.0F;
                 float uvTo = (to + currentFlow) % 1.0F;
 
-                // 确保UV在0-1范围内
+                // keep UV within 0..1
                 if (uvFrom < 0) uvFrom += 1.0F;
                 if (uvTo < 0) uvTo += 1.0F;
 
-                // 使用父类的正常透明度计算
+                // use the parent's normal alpha computation
                 float alphaFrom = Mth.clamp(from, 0.0F, 1.0F) * fading;
                 float alphaTo = Mth.clamp(to, 0.0F, 1.0F) * fading;
 
-                // 使用原始颜色（移除动态颜色计算）
-                vertexConsumer.vertex(pos1.x(), pos1.y(), pos1.z()).uv(uvFrom, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom).uv2(light).endVertex();
-                vertexConsumer.vertex(pos2.x(), pos2.y(), pos2.z()).uv(uvFrom, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom).uv2(light).endVertex();
-                vertexConsumer.vertex(pos3.x(), pos3.y(), pos3.z()).uv(uvTo, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo).uv2(light).endVertex();
-                vertexConsumer.vertex(pos4.x(), pos4.y(), pos4.z()).uv(uvTo, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo).uv2(light).endVertex();
+                // original colors (dynamic color computation removed upstream)
+                vertexConsumer.addVertex(pos1.x(), pos1.y(), pos1.z()).setUv(uvFrom, 1.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom).setLight(light);
+                vertexConsumer.addVertex(pos2.x(), pos2.y(), pos2.z()).setUv(uvFrom, 0.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom).setLight(light);
+                vertexConsumer.addVertex(pos3.x(), pos3.y(), pos3.z()).setUv(uvTo, 0.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo).setLight(light);
+                vertexConsumer.addVertex(pos4.x(), pos4.y(), pos4.z()).setUv(uvTo, 1.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo).setLight(light);
 
                 from += interval;
                 to += interval;
@@ -192,11 +192,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
         }
     }
 
-    public boolean shouldCull() {
-        return false;
-    }
-
-    // 设置流动速度的方法
+    // flow speed setter
     public void setFlowSpeed(float speed) {
         this.flowSpeed = speed;
     }
@@ -240,7 +236,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
 
             if (result.hand() != null) {
                 ItemStack stack = owner.getOriginal().getItemInHand(result.hand());
-                RenderItemBase renderItemBase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+                RenderItemBase renderItemBase = RenderEngine.getInstance().getItemRenderer(stack);
 
                 if (renderItemBase != null && renderItemBase.trailInfo() != null) {
                     result = renderItemBase.trailInfo().overwrite(result);
@@ -250,7 +246,7 @@ public class FlowingAnimationTrailParticle extends AnimationTrailParticle {
             if (result.playable()) {
                 FlowingAnimationTrailParticle particle = new FlowingAnimationTrailParticle(level, owner, owner.getArmature().searchJointById(jointId), animation, result);
 
-                // 调整流动速度
+                // tune the flow speed
                 particle.setFlowSpeed(4.0F);
 
                 return particle;

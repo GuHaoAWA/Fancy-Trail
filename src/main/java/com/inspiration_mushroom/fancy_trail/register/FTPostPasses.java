@@ -1,13 +1,13 @@
 package com.inspiration_mushroom.fancy_trail.register;
 
 
-import com.guhao.vix.client.shaderpasses.PostPassBase;
 import com.inspiration_mushroom.fancy_trail.client.shaderpasses.*;
+import com.guhao.vix.client.shaderpasses.PostPassBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterShadersEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
 import java.io.IOException;
 

@@ -12,6 +12,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -28,8 +29,13 @@ public class SubMaskRenderType extends PostParticleRenderType {
         super(renderTypeID, texture);
     }
 
+    // Upstream overrode the FULL begin() (its only delta vs the vix base: culling ENABLED).
+    // Fixed-vix beginPost contract (1.21): the interface begin() must stay the inherited
+    // side-effect-free no-op (a side-effectful begin() re-creates the FBO leak through the
+    // NeoForge vanilla particle loop), so the upstream begin() body lives in beginPost(),
+    // which the vix MixinParticleEngine always pairs with finish().
     @Override
-    public void begin(@NotNull BufferBuilder bufferBuilder, @NotNull TextureManager textureManager) {
+    public BufferBuilder beginPost(@NotNull Tesselator tesselator, @NotNull TextureManager textureManager) {
         RenderSystem.enableBlend();
         RenderSystem.enableCull();
         Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
@@ -40,7 +46,7 @@ public class SubMaskRenderType extends PostParticleRenderType {
 
         if (texture != null) RenderUtils.GLSetTexture(texture);
         getPipeline().start();
-        setupBufferBuilder(bufferBuilder);
+        return setupBufferBuilder(tesselator);
     }
 
     public RenderTarget getTarget() {
@@ -54,8 +60,9 @@ public class SubMaskRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
     }
 
     @Override

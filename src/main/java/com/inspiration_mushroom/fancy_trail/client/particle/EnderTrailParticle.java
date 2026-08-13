@@ -15,8 +15,8 @@
     import net.minecraft.util.Mth;
     import net.minecraft.world.entity.Entity;
     import net.minecraft.world.item.ItemStack;
-    import net.minecraftforge.api.distmarker.Dist;
-    import net.minecraftforge.api.distmarker.OnlyIn;
+    import net.neoforged.api.distmarker.Dist;
+    import net.neoforged.api.distmarker.OnlyIn;
     import org.jetbrains.annotations.NotNull;
     import org.joml.Matrix4f;
     import org.joml.Vector4f;
@@ -26,7 +26,7 @@
     import yesman.epicfight.api.asset.AssetAccessor;
     import yesman.epicfight.api.client.animation.property.ClientAnimationProperties;
     import yesman.epicfight.api.client.animation.property.TrailInfo;
-    import yesman.epicfight.client.ClientEngine;
+    import yesman.epicfight.client.events.engine.RenderEngine;
     import yesman.epicfight.client.particle.AnimationTrailParticle;
     import yesman.epicfight.client.particle.EpicFightParticleRenderTypes;
     import yesman.epicfight.client.renderer.patched.item.RenderItemBase;
@@ -38,7 +38,7 @@
     import java.util.Optional;
 
     /**
-     * 待实现
+     * WIP (upstream note)
      */
     @OnlyIn(Dist.CLIENT)
     public class EnderTrailParticle extends AnimationTrailParticle {
@@ -98,10 +98,10 @@
                 float alphaFrom = Mth.clamp(from, 0.0F, 1.0F);
                 float alphaTo = Mth.clamp(to, 0.0F, 1.0F);
 
-                vertexConsumer.vertex(pos1.x(), pos1.y(), pos1.z()).uv(from, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv2(light).endVertex();
-                vertexConsumer.vertex(pos2.x(), pos2.y(), pos2.z()).uv(from, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).uv2(light).endVertex();
-                vertexConsumer.vertex(pos3.x(), pos3.y(), pos3.z()).uv(to, 0.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv2(light).endVertex();
-                vertexConsumer.vertex(pos4.x(), pos4.y(), pos4.z()).uv(to, 1.0F).color(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).uv2(light).endVertex();
+                vertexConsumer.addVertex(pos1.x(), pos1.y(), pos1.z()).setUv(from, 1.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).setLight(light);
+                vertexConsumer.addVertex(pos2.x(), pos2.y(), pos2.z()).setUv(from, 0.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaFrom * fading).setLight(light);
+                vertexConsumer.addVertex(pos3.x(), pos3.y(), pos3.z()).setUv(to, 0.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).setLight(light);
+                vertexConsumer.addVertex(pos4.x(), pos4.y(), pos4.z()).setUv(to, 1.0F).setColor(this.rCol, this.gCol, this.bCol, this.alpha * alphaTo * fading).setLight(light);
 
                 from += interval;
                 to += interval;
@@ -153,7 +153,7 @@
 
                 if (result.hand() != null) {
                     ItemStack stack = entitypatch.getOriginal().getItemInHand(result.hand());
-                    RenderItemBase renderItemBase = ClientEngine.getInstance().renderEngine.getItemRenderer(stack);
+                    RenderItemBase renderItemBase = RenderEngine.getInstance().getItemRenderer(stack);
 
                     if (renderItemBase != null && renderItemBase.trailInfo() != null) {
                         result = renderItemBase.trailInfo().overwrite(result);

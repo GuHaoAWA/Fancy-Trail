@@ -1,0 +1,48 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "${mod_license}"
+logoFile = "ft.png"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+authors = "Inspiration Mushroom(GuHao_)"
+description = '''${mod_description}'''
+
+# Mixin config (NeoForge loads mixins from here; the Forge IMixinConnector bootstrap was dropped).
+[[mixins]]
+config = "fancy_trail.mixins.json"
+
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
+[[dependencies.fancy_trail]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.219,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.fancy_trail]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1]"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.fancy_trail]]
+modId = "vix"
+type = "required"
+versionRange = "[1.0.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Port-added explicit dependency: every trail particle/mixin references Epic Fight classes
+# (upstream relied on the vix -> epicfight chain only).
+[[dependencies.fancy_trail]]
+modId = "epicfight"
+type = "required"
+versionRange = "[21.17,)"
+ordering = "AFTER"
+side = "BOTH"

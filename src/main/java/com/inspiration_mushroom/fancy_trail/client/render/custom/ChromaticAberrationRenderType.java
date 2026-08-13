@@ -9,6 +9,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -50,8 +51,9 @@ public class ChromaticAberrationRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override
@@ -107,9 +109,9 @@ public class ChromaticAberrationRenderType extends PostParticleRenderType {
 
 
             FTPostPasses.chromatic_aberration.process(
-                    main,    // 输入：主渲染目标
-                    src,     // 输入：粒子渲染目标
-                    tmp,     // 输出：临时目标
+                    main,    // input: main render target
+                    src,     // input: particle render target
+                    tmp,     // output: temp target
                     FTClientConfig.getChromaticEffect()
             );
 
@@ -123,12 +125,12 @@ public class ChromaticAberrationRenderType extends PostParticleRenderType {
         }
     }
 
-    // 便捷构造方法
+    // convenience factories
     public static ChromaticAberrationRenderType createDefault(ResourceLocation name, ResourceLocation location) {
         return new ChromaticAberrationRenderType(
                 name, location,
-                1.005f, 1.0f, 1.003f,  // 默认RGB偏移
-                1.0f, 1.0f, 1.0f       // 默认颜色调制
+                1.005f, 1.0f, 1.003f,  // default RGB offsets
+                1.0f, 1.0f, 1.0f       // default color modulation
         );
     }
 
@@ -151,7 +153,7 @@ public class ChromaticAberrationRenderType extends PostParticleRenderType {
         );
     }
 
-    // Getter方法
+    // getters
     public float getOffsetR() { return offsetR; }
     public float getOffsetG() { return offsetG; }
     public float getOffsetB() { return offsetB; }

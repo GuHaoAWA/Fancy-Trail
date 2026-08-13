@@ -7,45 +7,47 @@ import com.inspiration_mushroom.fancy_trail.client.particle.flow.*;
 import com.inspiration_mushroom.fancy_trail.client.render.afterimage.WeaponAfterImageTriggerParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-@Mod.EventBusSubscriber(modid = FT.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+// 21.1: EventBusSubscriber auto-detects the bus from the handler event types; the Bus attribute is deprecated-for-removal.
+@EventBusSubscriber(modid = FT.MODID, value = Dist.CLIENT)
 public class ClientModBusEvent {
-    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, FT.MODID);
-    public static final RegistryObject<SimpleParticleType> BLOOM_TRAIL = PARTICLES.register("bloom_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_BLOOM_TRAIL = PARTICLES.register("flowing_bloom_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> SPACE_TRAIL = PARTICLES.register("space_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_SPACE_TRAIL = PARTICLES.register("flowing_space_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> AIR_TRAIL = PARTICLES.register("air_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> STATIC_AIR_TRAIL = PARTICLES.register("static_air_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_STATIC_AIR_TRAIL = PARTICLES.register("flowing_static_air_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_AIR_TRAIL = PARTICLES.register("flowing_air_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> CHROMATIC_TRAIL = PARTICLES.register("chromatic_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_CHROMATIC_TRAIL = PARTICLES.register("flowing_chromatic_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> RGB_TRAIL = PARTICLES.register("rgb_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_RGB_TRAIL = PARTICLES.register("flowing_rgb_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> STARRY_TRAIL = PARTICLES.register("starry_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_STARRY_TRAIL = PARTICLES.register("flowing_starry_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> AFTER_IMAGE_TRAIL = PARTICLES.register("after_image_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> FLOWING_AFTER_IMAGE_TRAIL = PARTICLES.register("flowing_after_image_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> ENDER_TRAIL = PARTICLES.register("ender_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> AAA_TRAIL = PARTICLES.register("aaa_trail", () -> new SimpleParticleType(true));
+    // 1.21 NeoForge: ForgeRegistries.PARTICLE_TYPES/RegistryObject -> BuiltInRegistries.PARTICLE_TYPE/DeferredHolder.
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, FT.MODID);
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLOOM_TRAIL = PARTICLES.register("bloom_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_BLOOM_TRAIL = PARTICLES.register("flowing_bloom_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPACE_TRAIL = PARTICLES.register("space_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_SPACE_TRAIL = PARTICLES.register("flowing_space_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> AIR_TRAIL = PARTICLES.register("air_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STATIC_AIR_TRAIL = PARTICLES.register("static_air_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_STATIC_AIR_TRAIL = PARTICLES.register("flowing_static_air_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_AIR_TRAIL = PARTICLES.register("flowing_air_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CHROMATIC_TRAIL = PARTICLES.register("chromatic_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_CHROMATIC_TRAIL = PARTICLES.register("flowing_chromatic_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RGB_TRAIL = PARTICLES.register("rgb_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_RGB_TRAIL = PARTICLES.register("flowing_rgb_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STARRY_TRAIL = PARTICLES.register("starry_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_STARRY_TRAIL = PARTICLES.register("flowing_starry_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> AFTER_IMAGE_TRAIL = PARTICLES.register("after_image_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_AFTER_IMAGE_TRAIL = PARTICLES.register("flowing_after_image_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> ENDER_TRAIL = PARTICLES.register("ender_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> AAA_TRAIL = PARTICLES.register("aaa_trail", () -> new SimpleParticleType(true));
 
-    public static final RegistryObject<SimpleParticleType> FIRE_TRAIL = PARTICLES.register("fire_trail", () -> new SimpleParticleType(true));
-    public static final RegistryObject<SimpleParticleType> BURST_TRAIL = PARTICLES.register("burst_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FIRE_TRAIL = PARTICLES.register("fire_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BURST_TRAIL = PARTICLES.register("burst_trail", () -> new SimpleParticleType(true));
 
-    /** 武器3D模型残影触发器粒子。不渲染任何视觉效果，仅作为残影系统的开关触发器 */
-    public static final RegistryObject<SimpleParticleType> WEAPON_AFTERIMAGE = PARTICLES.register("weapon_afterimage", () -> new SimpleParticleType(true));
+    // renders nothing; its presence in a trail_effects entry is the switch that arms the afterimage capture
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> WEAPON_AFTERIMAGE = PARTICLES.register("weapon_afterimage", () -> new SimpleParticleType(true));
 
-    public static final RegistryObject<SimpleParticleType> FLOWING_ANIMATION_TRAIL = PARTICLES.register("flowing_trail", () -> new SimpleParticleType(true));
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FLOWING_ANIMATION_TRAIL = PARTICLES.register("flowing_trail", () -> new SimpleParticleType(true));
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onParticleRegistry(final RegisterParticleProvidersEvent event) {

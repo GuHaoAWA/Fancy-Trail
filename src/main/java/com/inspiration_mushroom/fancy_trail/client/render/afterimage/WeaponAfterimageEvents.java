@@ -2,27 +2,16 @@ package com.inspiration_mushroom.fancy_trail.client.render.afterimage;
 
 import com.inspiration_mushroom.fancy_trail.FT;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
-/**
- * 武器残影渲染事件监听器。
- * 使用 @EventBusSubscriber 自动注册到 FORGE 事件总线，比手动 register(this) 更可靠。
- */
-@Mod.EventBusSubscriber(modid = FT.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(modid = FT.MODID, value = Dist.CLIENT)
 public class WeaponAfterimageEvents {
-
-    private static boolean loggedOnce = false;
 
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (!loggedOnce) {
-            FT.LOGGER.info("[WeaponAfterimage] RenderLevelStageEvent fired! stage={}", event.getStage());
-            loggedOnce = true;
-        }
-
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
 
         Minecraft mc = Minecraft.getInstance();
@@ -34,7 +23,8 @@ public class WeaponAfterimageEvents {
                 event.getPoseStack(),
                 mc.renderBuffers().bufferSource(),
                 event.getCamera(),
-                event.getPartialTick()
+                // 1.21 NeoForge: RenderLevelStageEvent hands out a DeltaTracker, not a float
+                event.getPartialTick().getGameTimeDeltaPartialTick(false)
         );
     }
 }

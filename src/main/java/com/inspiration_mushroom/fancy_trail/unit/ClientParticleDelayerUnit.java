@@ -3,10 +3,9 @@ package com.inspiration_mushroom.fancy_trail.unit;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderFrameEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +18,7 @@ public class ClientParticleDelayerUnit {
     private static boolean inTick = false;
 
     /**
-     * 延迟生成粒子
+     * Schedule a delayed particle spawn.
      */
     public static void scheduleParticle(ClientLevel level, int eid, int animid, int jointId, int idx,
                                         long delayMs, SimpleParticleType particleType) {
@@ -34,28 +33,30 @@ public class ClientParticleDelayerUnit {
     }
 
     /**
-     * 在渲染刻中处理延迟粒子
+     * Process delayed particles on the render tick.
+     * 1.21 NeoForge: upstream subscribed to TickEvent.RenderTickEvent and filtered on
+     * Phase.END; RenderFrameEvent.Post IS the end-of-frame phase, so the phase check is gone.
      */
-    @SubscribeEvent
-    public static void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase != TickEvent.RenderTickEvent.Phase.END) return;
+    public static void onRenderTick(RenderFrameEvent.Post event) {
         if (DELAYED_PARTICLES.isEmpty() && TO_ADD.isEmpty()) return;
 
         inTick = true;
-        long currentTime = System.currentTimeMillis();
 
-        // 处理到期的粒子
+        long currentTime = System.currentTimeMillis();
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
+
+        // Execute due particles
         Iterator<DelayedParticle> iterator = DELAYED_PARTICLES.iterator();
         while (iterator.hasNext()) {
             DelayedParticle particle = iterator.next();
 
             if (currentTime >= particle.scheduledTime) {
-                particle.execute(event.renderTickTime); // 传递 partialTick 时间
+                particle.execute(partialTick);
                 iterator.remove();
             }
         }
 
-        // 添加新调度的粒子
+        // Add newly scheduled particles
         if (!TO_ADD.isEmpty()) {
             DELAYED_PARTICLES.addAll(TO_ADD);
             TO_ADD.clear();
@@ -65,7 +66,7 @@ public class ClientParticleDelayerUnit {
     }
 
     /**
-     * 取消所有延迟粒子（用于级别卸载等情况）
+     * Cancel all delayed particles (level unload etc.).
      */
     public static void clearAll() {
         DELAYED_PARTICLES.clear();
@@ -73,7 +74,7 @@ public class ClientParticleDelayerUnit {
     }
 
     /**
-     * 延迟粒子任务
+     * A delayed particle task.
      */
     private static class DelayedParticle {
         private final ClientLevel level;

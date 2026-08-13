@@ -8,6 +8,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -48,8 +49,9 @@ public class BackgroundBlendRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override
@@ -129,7 +131,7 @@ public class BackgroundBlendRenderType extends PostParticleRenderType {
                 temp = TargetManager.getTarget(TEMP_TARGET);
                 if (temp == null) return;
 
-                // 确保尺寸一致
+                // keep sizes in sync
                 if (temp.width != main.width || temp.height != main.height) {
                     temp.resize(main.width, main.height, ON_OSX);
                 }
@@ -137,18 +139,18 @@ public class BackgroundBlendRenderType extends PostParticleRenderType {
                 currentTime += 0.016f;
                 if (currentTime > 1000) currentTime = 0;
 
-                // 关键：传入 main（主场景）和 src（粒子目标）
+                // key point: pass main (scene) and src (particle target)
                 FTPostPasses.background_blend.process(
-                        main,               // 主场景（背景）
-                        src,                // 粒子纹理（刀光）
-                        temp,               // 输出目标
+                        main,               // main scene (background)
+                        src,                // particle texture (blade trail)
+                        temp,               // output target
                         blendStrength,
                         glowIntensity,
                         alphaBoost,
                         currentTime
                 );
 
-                // 将结果复制回主目标
+                // copy the result back to the main target
                 FTPostPasses.blit.process(temp, main);
 
 

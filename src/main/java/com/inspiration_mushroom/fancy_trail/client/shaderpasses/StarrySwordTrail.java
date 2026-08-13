@@ -39,7 +39,7 @@ public class StarrySwordTrail extends PostPassBase {
         inTarget.unbindRead();
     }
 
-    // 简化版本
+    // simplified variant
     public void process(RenderTarget inTarget, RenderTarget mask, RenderTarget outTarget, float time) {
         process(inTarget, mask, outTarget, 0, time, 1.0f, 4.0f, 0.8f, 12);
     }

@@ -3,8 +3,8 @@ package com.inspiration_mushroom.fancy_trail.client.render;
 
 import com.google.common.collect.Maps;
 import com.inspiration_mushroom.fancy_trail.FT;
-import com.guhao.vix.util.OjangUtils;
 import com.inspiration_mushroom.fancy_trail.client.render.custom.*;
+import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -18,8 +18,8 @@ import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public class FTRenderType {
         return ChromaticAberrationRenderType.createWithOffset(
                 OjangUtils.newRL(FT.MODID, "chromatic_aberration"),
                 location,
-                1.01f, 1.002f, 1.008f  // 更强的色差效果
+                1.01f, 1.002f, 1.008f  // stronger chromatic aberration
         );
     }
 
@@ -79,7 +79,7 @@ public class FTRenderType {
         );
     }
 
-    // 自定义参数版本
+    // custom-parameter variant
     public static StarryTrailRenderType customStarryTrailRenderType(ResourceLocation location,
                                                                     float intensity, float starScale,
                                                                     float opacity, int layers,
@@ -110,43 +110,43 @@ public class FTRenderType {
         return bloomType;
     }
 
-    // 刀光专用的残像效果
+    // after-image effect tuned for blade trails
     public static AfterImageRenderType bladeAfterImageRenderType(ResourceLocation texture) {
         return new AfterImageRenderType(
                 OjangUtils.newRL(FT.MODID, "blade_after_image"),
                 texture,
-                0.6f,    // 强度 - 更高让残影更明显
-                4.0f,    // 衰减速度 - 更快让残影更锐利
-                0.8f,    // 运动模糊因子 - 增强刀光轨迹
-                0.15f,   // 色彩偏移 - 产生蓝紫效果
-                1.0f,    // 方向X
-                0.0f     // 方向Y
+                0.6f,    // strength - higher makes the after-image more visible
+                4.0f,    // decay speed - faster makes the after-image sharper
+                0.8f,    // motion blur factor - accentuates the blade arc
+                0.15f,   // color shift - produces the blue/violet tint
+                1.0f,    // direction X
+                0.0f     // direction Y
         );
     }
 
-    // 高速斩击刀光
+    // fast slash blade trail
     public static AfterImageRenderType rapidSlashRenderType(ResourceLocation texture) {
         return new AfterImageRenderType(
                 OjangUtils.newRL(FT.MODID, "rapid_slash"),
                 texture,
-                0.8f,    // 更高强度
-                5.0f,    // 更快衰减（残影更短）
-                0.9f,    // 强运动模糊
-                0.2f,    // 强色彩偏移
+                0.8f,    // higher strength
+                5.0f,    // faster decay (shorter after-image)
+                0.9f,    // strong motion blur
+                0.2f,    // strong color shift
                 1.0f,
                 0.0f
         );
     }
 
-    // 重击刀光（拖尾更长）
+    // heavy blow blade trail (longer tail)
     public static AfterImageRenderType heavyBlowRenderType(ResourceLocation texture) {
         return new AfterImageRenderType(
                 OjangUtils.newRL(FT.MODID, "heavy_blow"),
                 texture,
-                0.5f,    // 适中强度
-                2.5f,    // 较慢衰减（拖尾更长）
-                0.6f,    // 适中运动模糊
-                0.1f,    // 轻微色彩偏移
+                0.5f,    // moderate strength
+                2.5f,    // slower decay (longer tail)
+                0.6f,    // moderate motion blur
+                0.1f,    // slight color shift
                 1.0f,
                 0.0f
         );
@@ -160,7 +160,7 @@ public class FTRenderType {
     }
 
     /**
-     * 获取自定义背景混合渲染类型
+     * Background-blend render type with custom parameters.
      */
     public static BackgroundBlendRenderType backgroundBlendRenderType(ResourceLocation texture,
                                                                       float blendStrength,
@@ -174,7 +174,7 @@ public class FTRenderType {
     }
 
     /**
-     * 获取柔和背景混合渲染类型
+     * Soft background-blend render type.
      */
     public static BackgroundBlendRenderType softBackgroundBlendRenderType(ResourceLocation texture) {
         ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_soft");
@@ -185,7 +185,7 @@ public class FTRenderType {
     }
 
     /**
-     * 获取强烈背景混合渲染类型
+     * Strong background-blend render type.
      */
     public static BackgroundBlendRenderType strongBackgroundBlendRenderType(ResourceLocation texture) {
         ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_strong");
@@ -196,7 +196,7 @@ public class FTRenderType {
     }
 
     /**
-     * 获取发光增强背景混合渲染类型
+     * Glow-boosted background-blend render type.
      */
     public static BackgroundBlendRenderType glowingBackgroundBlendRenderType(ResourceLocation texture) {
         ResourceLocation key = OjangUtils.newRL(FT.MODID, "background_blend_glow");
@@ -211,31 +211,28 @@ public class FTRenderType {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         AbstractTexture endPortalTexture = textureManager.getTexture(TheEndPortalRenderer.END_PORTAL_LOCATION);
 
+        // 1.21 ParticleRenderType: begin(Tesselator, TextureManager) RETURNS the builder and
+        // there is no end() hook — the engine builds/draws the batch and restores depth mask +
+        // blend itself after the type loop (the upstream end() body).
         return new ParticleRenderType() {
-            public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
+            @Override
+            public BufferBuilder begin(@NotNull Tesselator tesselator, @NotNull TextureManager textureManager) {
                 RenderSystem.disableCull();
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                 RenderSystem.depthMask(false);
 
-                // 绑定末地传送门纹理并设置纹理参数
+                // Bind the end-portal texture and clamp it
                 RenderSystem.setShaderTexture(0, TheEndPortalRenderer.END_PORTAL_LOCATION);
                 RenderSystem.texParameter(3553, 10242, 33071); // GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE
                 RenderSystem.texParameter(3553, 10243, 33071); // GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE
 
-                // 设置粒子着色器
                 RenderSystem.setShader(GameRenderer::getParticleShader);
 
-                bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+                return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
             }
 
-            public void end(@NotNull Tesselator tesselator) {
-                tesselator.end();
-                RenderSystem.depthMask(true);
-                RenderSystem.disableBlend();
-                RenderSystem.enableCull();
-            }
-
+            @Override
             public String toString() {
                 return "ender_portal_particle";
             }

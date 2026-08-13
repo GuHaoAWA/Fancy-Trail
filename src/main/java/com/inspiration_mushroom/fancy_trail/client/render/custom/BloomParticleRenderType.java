@@ -55,6 +55,7 @@ public class BloomParticleRenderType extends PostParticleRenderType {
     }
 
     public static class Pipeline extends PostEffectPipelines.Pipeline {
+        // shared across every intensity variant: the blur chain only depends on the frame size
         private static RenderTarget[] blur;
         private static RenderTarget[] blur_;
         private static RenderTarget temp;
@@ -75,7 +76,7 @@ public class BloomParticleRenderType extends PostParticleRenderType {
             RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
             RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL12.GL_LINEAR);
             RenderSystem.texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL12.GL_LINEAR);
-//模糊方式一
+// blur approach #1
 
             FTPostPasses.downSampler.process(src, blur[0]);    //2
             FTPostPasses.downSampler.process(blur[0], blur[1]);//4
@@ -92,7 +93,7 @@ public class BloomParticleRenderType extends PostParticleRenderType {
 
             FTPostPasses.blit.process(temp, Minecraft.getInstance().getMainRenderTarget());
 
-//模糊方式二
+// blur approach #2
 
 //                FTPostPasses.blur.process(src, blur[0], 1, 0 ,3);     // src -> 2
 //                FTPostPasses.blur.process(blur[0], blur_[0], 0,1 ,3); // 2 -> 2_

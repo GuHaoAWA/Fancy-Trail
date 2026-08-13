@@ -9,6 +9,7 @@ import com.guhao.vix.client.targets.TargetManager;
 import com.guhao.vix.util.OjangUtils;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -37,8 +38,9 @@ public class RGBTrailRenderType extends PostParticleRenderType {
     }
 
     @Override
-    public void setupBufferBuilder(BufferBuilder bufferBuilder) {
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+    protected BufferBuilder setupBufferBuilder(Tesselator tesselator) {
+        // Fixed-vix beginPost contract (1.21): the buffer-format seam RETURNS the builder.
+        return tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
     }
 
     @Override
@@ -95,11 +97,11 @@ public class RGBTrailRenderType extends PostParticleRenderType {
 
             currentTime += 0.05f;
 
-            // 使用默认参数
+            // default parameters
             FTPostPasses.rgb_trail.process(
-                    main,    // 输入：主渲染目标
-                    src,     // 输入：粒子渲染目标
-                    tmp,     // 输出：临时目标
+                    main,    // input: main render target
+                    src,     // input: particle render target
+                    tmp,     // output: temp target
                     currentTime,
                     1.0f,    // intensity
                     3.0f,    // starScale
@@ -119,7 +121,7 @@ public class RGBTrailRenderType extends PostParticleRenderType {
         }
     }
 
-    // 便捷构造方法
+    // convenience factories
     public static RGBTrailRenderType createDefault(ResourceLocation name, ResourceLocation location) {
         return new RGBTrailRenderType(
                 name, location

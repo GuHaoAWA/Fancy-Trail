@@ -24,9 +24,6 @@ public class UnityComposite extends PostPassBase {
         process(inTarget, outTarget, downTexture, bg, DEFAULT_BLOOM_INTENSITY);
     }
 
-    /**
-     * 带泛光强度的版本。intensity < 0 时使用 JSON 默认值（5.0）。
-     */
     public void process(RenderTarget inTarget, RenderTarget outTarget, RenderTarget downTexture,
                         RenderTarget bg, float bloomIntensity) {
         prevProcess(inTarget, outTarget);
